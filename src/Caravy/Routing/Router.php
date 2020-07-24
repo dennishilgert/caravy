@@ -12,6 +12,20 @@ class Router
     private $routeRegistry;
 
     /**
+     * Instance of the route-resolver.
+     * 
+     * @var \Caravy\Routing\RouteResolver
+     */
+    private $routeResolver;
+
+    /**
+     * Instance of the container.
+     * 
+     * @var \Caravy\Container\Container
+     */
+    private $container;
+
+    /**
      * All methods the router can handle.
      * 
      * @var array
@@ -23,9 +37,11 @@ class Router
      * 
      * @param \Caravy\Routing\RouteRegistry $routeRegistry
      */
-    public function __construct(\Caravy\Routing\RouteRegistry $routeRegistry)
+    public function __construct(\Caravy\Routing\RouteRegistry $routeRegistry, \Caravy\Routing\RouteResolver $routeResolver, \Caravy\Container\Container $container)
     {
         $this->routeRegistry = $routeRegistry;
+        $this->routeResolver = $routeResolver;
+        $this->container = $container;
     }
 
     /**
@@ -33,10 +49,11 @@ class Router
      * 
      * @param string $uri
      * @param mixed $closure
+     * @return void
      */
-    public function get($uri, $closure)
+    public function get($uri, $closure, $name = null)
     {
-        $route = new Route(['GET'], $uri, $closure);
+        $route = new Route(['GET'], $uri, $closure, $name);
         $this->addRoute($route);
     }
 
@@ -45,10 +62,11 @@ class Router
      * 
      * @param string $uri
      * @param \Closure $closure
+     * @return void
      */
-    public function post($uri, $closure)
+    public function post($uri, $closure, $name = null)
     {
-        $route = new Route(['POST'], $uri, $closure);
+        $route = new Route(['POST'], $uri, $closure, $name);
         $this->addRoute($route);
     }
 
@@ -57,10 +75,11 @@ class Router
      * 
      * @param string $uri
      * @param \Closure $closure
+     * @return void
      */
-    public function put($uri, $closure)
+    public function put($uri, $closure, $name = null)
     {
-        $route = new Route(['PUT'], $uri, $closure);
+        $route = new Route(['PUT'], $uri, $closure, $name);
         $this->addRoute($route);
     }
 
@@ -69,10 +88,11 @@ class Router
      * 
      * @param string $uri
      * @param \Closure $closure
+     * @return void
      */
-    public function delete($uri, $closure)
+    public function delete($uri, $closure, $name = null)
     {
-        $route = new Route(['DELETE'], $uri, $closure);
+        $route = new Route(['DELETE'], $uri, $closure, $name);
         $this->addRoute($route);
     }
 
@@ -81,10 +101,11 @@ class Router
      * 
      * @param string $uri
      * @param \Closure $closure
+     * @return void
      */
-    public function any($uri, $closure)
+    public function any($uri, $closure, $name = null)
     {
-        $route = new Route($this->methods, $uri, $closure);
+        $route = new Route($this->methods, $uri, $closure, $name);
         $this->addRoute($route);
     }
 
@@ -92,9 +113,30 @@ class Router
      * Add a Route to the route-registry.
      * 
      * @param \Caravy\Routing\Route $route
+     * @return void
      */
     private function addRoute($route)
     {
         $this->routeRegistry->register($route);
+    }
+
+    /**
+     * Resolve a route and execute the defined function.
+     * 
+     * @param \Caravy\Routing\Request $request
+     * @return void
+     */
+    public function handleRequest($request)
+    {
+        $resolveResult = $this->routeResolver->resolve($request);
+        if ($resolveResult === false) {
+            // throw bad-request error
+            return;
+        }
+        $route = $resolveResult->getRoute();
+        $params = $resolveResult->getParams();
+
+        $routeController = $this->container->provide($route->getController());
+        $routeController->{$route->getAction()}($params);
     }
 }

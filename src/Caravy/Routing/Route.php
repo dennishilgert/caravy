@@ -2,8 +2,6 @@
 
 namespace Caravy\Routing;
 
-use Caravy\Support\Arr;
-
 class Route
 {
     /**
@@ -33,13 +31,6 @@ class Route
      * @var array
      */
     private $segments;
-
-    /**
-     * Priorities of the segments.
-     * 
-     * @var array
-     */
-    private $segmentPriorities;
 
     /**
      * Base-segment of the uri.
@@ -76,18 +67,17 @@ class Route
      * @param string $uri
      * @param string $controllerAction
      */
-    public function __construct($methods, $uri, $controllerAction)
+    public function __construct($methods, $uri, $controllerAction, $name)
     {
         $this->methods = $methods;
         $this->uri = $uri;
         $this->controllerAction = $controllerAction;
+        $this->name = $name;
 
         $this->seperateController($this->controllerAction);
         $this->seperateAction($this->controllerAction);
 
         $this->segments = $this->seperate($uri, '/');
-
-        $this->segmentPriorities = $this->definePriorities($this->segments, $this->uri);
     }
 
     /**
@@ -131,32 +121,37 @@ class Route
         return explode($delimitter, $string)[$index];
     }
 
-    private function definePriorities($segments, $uri)
+    /**
+     * Check if a segment of a string matches a pattern.
+     * 
+     * @param string $pattern
+     * @param string $input
+     * @param int $index
+     * @return array
+     */
+    public static function matchParam($input, $index = 0)
     {
-        $segmentPriorities = [];
-
-        $paramIndex = [];
-        $params = $this->extractParams($uri);
-        if (empty($params) === false) {
-            foreach ($params as $param) {
-                array_push($paramIndex, Arr::position($segments, $param));
-            }
+        preg_match('/\{([\w]+?)\}/', $input, $matches);
+        if (empty($matches)) {
+            return [];
         }
-
-        for ($i = 0; $i < count($segments); $i++) {
-            if (Arr::has($paramIndex, $i)) {
-                $segmentPriorities[$i] = 'param';
-            } else {
-                $segmentPriorities[$i] = 'const';
-            }
-        }
-        return $segmentPriorities;
+        return $matches[$index];
     }
 
-    private function extractParams($uri)
+    /**
+     * Check if a string has segments matching a pattern.
+     * 
+     * @param string $input
+     * @param int $index
+     * @return array
+     */
+    public static function matchParams($input, $index = 0)
     {
-        preg_match_all('/\{([\w]+?)\}/', $uri, $matches);
-        return $matches[0];
+        preg_match_all('/\{([\w]+?)\}/', $input, $matches);
+        if (empty($matches)) {
+            return [];
+        }
+        return $matches[$index];
     }
 
     /**
@@ -200,16 +195,6 @@ class Route
     }
 
     /**
-     * Get the priorities of the segments.
-     * 
-     * @return array
-     */
-    public function getSegmentPriorities()
-    {
-        return $this->segmentPriorities;
-    }
-
-    /**
      * Get the base-segment of the current route.
      * 
      * @return string
@@ -217,5 +202,25 @@ class Route
     public function getBaseSegment()
     {
         return $this->baseSegment;
+    }
+
+    /**
+     * Get the responsible controller for the current route.
+     * 
+     * @return string
+     */
+    public function getController()
+    {
+        return $this->controller;
+    }
+
+    /**
+     * Get the action for the current route.
+     * 
+     * @return string
+     */
+    public function getAction()
+    {
+        return $this->action;
     }
 }

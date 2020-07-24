@@ -2,6 +2,8 @@
 
 namespace Caravy\Routing;
 
+use Caravy\Support\Arr;
+
 class RouteResolver
 {
     /**
@@ -21,32 +23,48 @@ class RouteResolver
         $this->routeRegistry = $routeRegistry;
     }
 
-    public function match($request)
+    /**
+     * Resolve a request to get a valid route.
+     * 
+     * @param \Caravy\Routing\Request $request
+     * @return \Caravy\Routing\ResolveResult|false
+     */
+    public function resolve($request)
     {
-        $methodRoutes = $this->routeRegistry->getByMethod($this->routeRegistry->getRoutes(), $request->getMethod());
-        foreach ($methodRoutes as $route) {
-            var_dump($route->getUri());
+        if (empty($request->getUri())) {
+            $route = Arr::get($this->routeRegistry->sortByName(), 'index');
+            return new ResolveResult($route, []);
+        }
+        $routes = $this->routeRegistry->getByMethod($this->routeRegistry->getRoutes(), $request->getMethod());
+        foreach ($routes as $route) {
             if ($this->compare($request, $route)) {
-                return $route;
+                $params = $this->extractParams($request, $route);
+                return new ResolveResult($route, $params);
             } else {
                 continue;
             }
         }
+        return false;
     }
 
-    public function compare($request, $route)
+    /**
+     * Compare a request with a route.
+     * 
+     * @param \Caravy\Routing\Request $request
+     * @param \Caravy\Routing\Route $route
+     * @return bool
+     */
+    private function compare($request, $route)
     {
         $requestSegments = $request->getSegments();
-
         $routeSegments = $route->getSegments();
-        $routeSegmentsPriorities = $route->getSegmentPriorities();
 
         $matched = true;
 
         if (count($requestSegments) === count($routeSegments)) {
             for ($i = 0; $i < count($routeSegments); $i++) {
-                if ($routeSegmentsPriorities[$i] === 'const') {
-                    if ($routeSegments[$i] !== $requestSegments[$i]) {
+                if (empty(Route::matchParam($routeSegments[$i]))) {
+                    if ($requestSegments[$i] !== $routeSegments[$i]) {
                         $matched = false;
                         break;
                     }
@@ -56,5 +74,26 @@ class RouteResolver
             $matched = false;
         }
         return $matched;
+    }
+
+    /**
+     * Extract params with a param-pattern from a request.
+     * 
+     * @param \Caravy\Routing\Request $request
+     * @param \Caravy\Routing\Route $route
+     * @return array
+     */
+    private function extractParams($request, $route)
+    {
+        $requestSegments = $request->getSegments();
+        $routeSegments = $route->getSegments();
+
+        $params = [];
+        for ($i = 0; $i < count($routeSegments); $i++) {
+            if (empty(Route::matchParam($routeSegments[$i])) === false) {
+                array_push($params, $requestSegments[$i]);
+            }
+        }
+        return $params;
     }
 }

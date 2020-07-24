@@ -2,7 +2,7 @@
 
 namespace Caravy\Routing;
 
-use caravy\Support\Arr;
+use Caravy\Support\Arr;
 
 class Request
 {

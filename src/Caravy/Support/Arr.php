@@ -37,6 +37,21 @@ class Arr
     }
 
     /**
+     * Get the key of a value.
+     * 
+     * @param array $array
+     * @param mixed $value
+     * @return mixed|false
+     */
+    public static function search($array, $value)
+    {
+        if (static::assoc($array)) {
+            return array_search($value, $array);
+        }
+        return false;
+    }
+
+    /**
      * Check wether the array is associative.
      * 
      * @param array $array
@@ -68,6 +83,23 @@ class Arr
             array_push($array, $key);
         }
         return $array;
+    }
+
+    /**
+     * Get an element of an array by a key.
+     * 
+     * @param array $array
+     * @param mixed $key
+     * @return mixed|false
+     */
+    public static function get($array, $key)
+    {
+        if (static::assoc($array)) {
+            if (static::has($array, $key)) {
+                return $array[$key];
+            }
+        }
+        return false;
     }
 
     /**
