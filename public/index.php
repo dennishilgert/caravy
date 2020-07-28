@@ -1,6 +1,11 @@
 <?php
 
-// initialize the application
+/**
+ * Initialize class-autoloading
+ */
 require __DIR__ . '/../autoload.php';
 
-$app = new \Caravy\Core\Application();
+/**
+ * Initialize application and helper functions and -classes
+ */
+require __DIR__ . '/../init.php';

@@ -34,7 +34,6 @@ class Application
 
         $router->get('user/{name}', '\Caravy\User\UserController@profile');
 
-
         $router->handleRequest(\Caravy\Routing\RequestFactory::current());
     }
 

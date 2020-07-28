@@ -130,13 +130,20 @@ class Router
     {
         $resolveResult = $this->routeResolver->resolve($request);
         if ($resolveResult === false) {
-            // throw bad-request error
+            // throw bad-request exception
             return;
         }
         $route = $resolveResult->getRoute();
-        $params = $resolveResult->getParams();
-
         $routeController = $this->container->provide($route->getController());
-        $routeController->{$route->getAction()}($params);
+        if ($routeController === false) {
+            // throw bad-controller exception
+            return;
+        }
+        $params = $resolveResult->getParams();
+        $executeResult = call_user_func_array(array($routeController, $route->getAction()), $params);
+        if ($executeResult === false) {
+            // throw bad-function exception
+            return;
+        }
     }
 }

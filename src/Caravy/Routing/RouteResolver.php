@@ -58,7 +58,6 @@ class RouteResolver
     {
         $requestSegments = $request->getSegments();
         $routeSegments = $route->getSegments();
-
         $matched = true;
 
         if (count($requestSegments) === count($routeSegments)) {

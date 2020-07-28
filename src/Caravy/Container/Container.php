@@ -25,14 +25,14 @@ class Container
      * Create or get instance-object.
      * 
      * @param string $instance
-     * @return object
+     * @return object|false
      */
     public function provide($instance)
     {
         if (array_key_exists($instance, $this->sharedInstances) === false) {
             $instanceObject = $this->new($instance);
             if (is_null($instanceObject)) {
-                return null;
+                return false;
             }
             $this->sharedInstances[$instance] = $instanceObject;
         }
