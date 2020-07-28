@@ -14,10 +14,10 @@ class PageController
     public function index()
     {
         $view = new \Caravy\View\View('index', [
-            'title' => 'Seitentitel',
+            'title' => 'Hallo Welt!',
             'params' => [
-                'key1' => 'value1',
-                'key2' => 'value2'
+                'key1' => 'Eintrag 1',
+                'key2' => 'Eintrag 2'
             ]
         ]);
         $view->render();

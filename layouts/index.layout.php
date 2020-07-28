@@ -9,16 +9,18 @@
 
 <body>
     <section>
-        @if (1 > 0)
+        @if ($title === 'Hallo Welt!')
 
-        <h1>Seitentitel: {{ $title }}</h1>
+        <h1>Seitentitel:</h1>
+        <p>{{ $title }}</p>
 
         @endif
     </section>
     <section>
         @foreach ($params as $param)
 
-        <h1>{{ $param }}</h1>
+        <h1>Untenstehender Parameter:</h1>
+        <p>{{ $param }}</p>
 
         @endforeach
     </section>

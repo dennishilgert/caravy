@@ -19,13 +19,6 @@ class View
     private $data;
 
     /**
-     * Content of the layout-file.
-     * 
-     * @var string
-     */
-    private $rawLayout;
-
-    /**
      * Instance of the render-engine.
      * 
      * @var \Caravy\View\RenderEngine
@@ -45,19 +38,8 @@ class View
     {
         $this->name = $name;
         $this->data = $data;
-        $this->loadLayout();
-        $this->renderEngine = new \Caravy\View\RenderEngine($this->rawLayout, $this->data);
-    }
 
-    /**
-     * Render the contents of the view.
-     * 
-     * @return string
-     */
-    public function renderContents()
-    {
-        $this->renderEngine->compileVariables();
-        $this->renderEngine->storeUncompiledBlocks();
+        $this->renderEngine = new \Caravy\View\RenderEngine($this->loadRawLayout(), $this->data);
     }
 
     /**
@@ -67,17 +49,22 @@ class View
      */
     public function render()
     {
-        echo $this->renderContents();
+        echo $this->renderEngine->compile();
     }
 
-    private function loadLayout()
+    /**
+     * Get the content of the layout-file as string.
+     * 
+     * @return string
+     */
+    private function loadRawLayout()
     {
         $dir = __DIR__ . '/../../../layouts/';
         $file = $dir . $this->name . '.layout.php';
         if (is_null($file)) {
             // throw bad-view-name exception
-            return;
+            return false;
         }
-        $this->rawLayout = file_get_contents($file);
+        return file_get_contents($file);
     }
 }
