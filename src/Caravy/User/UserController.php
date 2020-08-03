@@ -19,13 +19,19 @@ class UserController
         var_dump($userId);
     }
 
-    public function delete()
+    public function delete($userId)
     {
-        var_dump('delete');
+        var_dump($userId);
     }
 
-    public function profile()
+    public function profile($username)
     {
-        var_dump('profile');
+        view('user/profile', [
+            'id' => '3',
+            'username' => $username,
+            'firstName' => 'Michael',
+            'lastName' => 'Jordan',
+            'email' => 'michael@gmail.com',
+        ]);
     }
 }

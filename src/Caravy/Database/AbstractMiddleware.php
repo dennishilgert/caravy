@@ -8,9 +8,9 @@ abstract class AbstractMiddleware
 {
     protected $pdo;
 
-    public function __construct(PDO $pdo)
+    public function __construct(\Caravy\Database\DatabaseManager $databaseManager)
     {
-        $this->pdo = $pdo;
+        $this->pdo = $databaseManager->getPdo();
     }
 
     abstract public function getTableName();

@@ -21,6 +21,7 @@ Simple PHP framework, following the mvc-pattern
 - [ ] @php ... @endphp
 
 ###### Tags:
+- [x] @yield
 - [ ] @csrf
 - [ ] @method
 - [ ] @include

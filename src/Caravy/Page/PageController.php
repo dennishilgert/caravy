@@ -11,7 +11,7 @@ class PageController
 
     public function index()
     {
-        $view = new \Caravy\View\View('index', [
+        view('index', [
             'title' => 'Hallo Welt!',
             'params' => [
                 'key1' => 'Eintrag 1',
@@ -20,6 +20,5 @@ class PageController
             ],
             'footer' => 'footer note'
         ]);
-        $view->render();
     }
 }

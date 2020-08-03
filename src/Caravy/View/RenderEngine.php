@@ -82,7 +82,7 @@ class RenderEngine
             $variable = $match['variable'];
 
             return $this->storeBlock(Str::asymetric($variable, '<?php echo escape($', '); ?>'));
-        }, $this->layout, PREG_SET_ORDER);
+        }, $this->layout);
 
         return $result;
     }
@@ -103,7 +103,7 @@ class RenderEngine
             $block = $this->buildConditionBlock($statement, $parameters, $content);
 
             return $this->storeBlock($block);
-        }, $this->layout, PREG_SET_ORDER);
+        }, $this->layout);
 
         return $result;
     }
@@ -152,7 +152,7 @@ class RenderEngine
                 default:
                     return Str::asymetric($variable, '<?php echo escape(', '); ?>');
             }
-        }, $block, PREG_SET_ORDER);
+        }, $block);
 
         return $result;
     }
