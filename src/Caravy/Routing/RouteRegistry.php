@@ -60,7 +60,7 @@ class RouteRegistry
     {
         $result = [];
         foreach ($routes as $route) {
-            if (Arr::has($route->{$filterName}(), $filter)) {
+            if (Arr::contains($route->{$filterName}(), $filter)) {
                 array_push($result, $route);
             }
         }

@@ -2,21 +2,24 @@
 
 namespace Caravy\View;
 
+use Caravy\Support\Str;
+use Exception;
+
 class RenderEngine
 {
     /**
-     * Temporary stored raw blocks.
+     * Temporary stored blocks.
      * 
      * @var array
      */
-    private $rawBlocks;
+    private $blocks;
 
     /**
      * Content of the layout-file.
      * 
      * @var string
      */
-    private $rawLayout;
+    private $layout;
 
     /**
      * Data passed to the view.
@@ -28,90 +31,79 @@ class RenderEngine
     /**
      * Create a new render-engine instance.
      * 
-     * @param string $rawLayout
+     * @param string $layout
      * @param array $data
      * @return void
      */
-    public function __construct($rawLayout, $data)
+    public function __construct($layout, $data)
     {
-        $this->rawBlocks = [];
-        $this->rawLayout = $rawLayout;
+        $this->blocks = [];
+        $this->layout = $layout;
         $this->data = $data;
     }
 
     /**
-     * Compile the raw layout with the given data.
+     * Get the output of the generated layout.
      * 
      * @return string
      */
     public function compile()
     {
-        $this->rawLayout = $this->compileVariables();
-        $this->rawLayout = $this->storeUncompiledBlocks();
-        $this->rawLayout = $this->compilePhpBlocks();
+        $this->layout = $this->storeYields();
+        $this->layout = $this->storeStatements();
 
-        return $this->restoreRawBlocks();
+        $restoredLayout = preg_replace_callback('/' . $this->getBlockPlaceholder('(\d+)') . '/', function ($matches) {
+            return $this->blocks[$matches[1]];
+        }, $this->layout);
+        $this->blocks = [];
+
+        extract($this->data, EXTR_SKIP);
+        ob_start();
+
+        try {
+            eval('?>' . $restoredLayout);
+        } catch (Exception $e) {
+            // Handle exception
+            echo $e->getMessage();
+        }
+
+        return ob_get_clean();
     }
 
     /**
-     * Compile the raw variables into a php-expression.
+     * Extract the yield-tags from the layout and replace
+     * them with a placeholder.
      * 
      * @return string
      */
-    private function compileVariables()
+    private function storeYields()
     {
-        $result = preg_replace_callback('/{{\s(.+)\s}}/', function ($match) {
-            return '<?php echo escape(' . $match[1] . '); ?>';
-        }, $this->rawLayout);
+        $result = preg_replace_callback('/@yield\s?\(\'(?<variable>[\w\$\-\>]+)\'\)\;/', function ($match) {
+            $variable = $match['variable'];
 
-        return $result;
-    }
-
-    private function compilePhpBlocks()
-    {
-        $result = preg_replace_callback('/\<\?php\s(.+)\s\?>/', function ($match) {
-            extract($this->data);
-
-            ob_start();
-            eval($match[1]);
-            $compiledBlock = ob_get_clean();
-
-            return $compiledBlock;
-        }, $this->rawLayout);
+            return $this->storeBlock(Str::asymetric($variable, '<?php echo escape($', '); ?>'));
+        }, $this->layout, PREG_SET_ORDER);
 
         return $result;
     }
 
     /**
-     * Extract the uncompiled blocks.
+     * Extract the statement-blocks from the layout and replace
+     * them with a placeholder.
      * 
-     * @param string $rawContent
-     * @return void
+     * @return string
      */
-    public function storeUncompiledBlocks()
+    private function storeStatements()
     {
-        // matches[i][0] Full match [@if (condition) ... @endif]
-        // matches[i][1] Group 1 @[if (condition)] ... @endif
-        // matches[i][2] Group 2 @[if] (condition) ... @endif
-        // matches[i][3] Group 3 @if (condition) [...] @endif
-        // matches[i][4] Group 4 @if (condition) ... @end[if]
-        $result = preg_replace_callback('/@(([a-z]{2,})\s\(.*?\)\n)\s*(.*?\n)\s*@end([a-z]{2,})/s', function ($match) {
-            extract($this->data);
+        $result = preg_replace_callback('/@(?<statement>[a-z]{2,})\s?\((?<parameters>.+?)\)\s*(?<content>.+?)\s*@end\1/s', function ($match) {
+            $statement = $match['statement'];
+            $parameters = $match['parameters'];
+            $content = $match['content'];
 
-            if ($match[2] !== $match[4]) {
-                // throw bad-block exception
-                return;
-            }
-            $rawCondition = $match[1];
-            $rawContent = $this->surroundUncompiledContent($match[3]);
-            $preparedCondition = $this->prepareCondition($rawCondition, $rawContent);
+            $block = $this->buildConditionBlock($statement, $parameters, $content);
 
-            ob_start();
-            eval($preparedCondition);
-            $rawBlock = ob_get_clean();
-
-            return $this->storeUncompiledBlock($rawBlock);
-        }, $this->rawLayout, PREG_SET_ORDER);
+            return $this->storeBlock($block);
+        }, $this->layout, PREG_SET_ORDER);
 
         return $result;
     }
@@ -119,31 +111,54 @@ class RenderEngine
     /**
      * Save the uncompiled blocks temporary in an array.
      * 
-     * @param string $rawBlock
+     * @param string $block
      * @return string
      */
-    private function storeUncompiledBlock($rawBlock)
+    private function storeBlock($block)
     {
-        return $this->getBlockPlaceholder(array_push($this->rawBlocks, $rawBlock) - 1);
+        return $this->getBlockPlaceholder(array_push($this->blocks, $block) - 1);
     }
 
     /**
-     * Compile the stored raw-blocks into the layout.
+     * Build a statement out of the segments.
      * 
+     * @param string $statement
+     * @param string $parameters
+     * @param string $content
      * @return string
      */
-    public function restoreRawBlocks()
+    private function buildConditionBlock($statement, $parameters, $content)
     {
-        $result = preg_replace_callback('/' . $this->getBlockPlaceholder('(\d+)') . '/', function ($matches) {
-            return $this->rawBlocks[$matches[1]];
-        }, $this->rawLayout);
-        $this->rawBlocks = [];
+        $content = $this->convertVariables($content);
+        return '<?php ' . $statement . '(' . $parameters . '): ?>' . $content . '<?php end' . $statement . '; ?>';
+    }
+
+    /**
+     * Convert the variable-syntax into php-syntax.
+     * 
+     * @param string $block
+     * @return string
+     */
+    private function convertVariables($block)
+    {
+        $result = preg_replace_callback('/\{(?<type>\{|\!\!)\s?(?<variable>[\w\$\-\>]+)\s?(\1|\})\}/', function ($match) {
+            $type = $match['type'];
+            $variable = $match['variable'];
+            switch ($type) {
+                case '{':
+                    return Str::asymetric($variable, '<?php echo escape(', '); ?>');
+                case '!!':
+                    return Str::asymetric($variable, '<?php echo ', '; ?>');
+                default:
+                    return Str::asymetric($variable, '<?php echo escape(', '); ?>');
+            }
+        }, $block, PREG_SET_ORDER);
 
         return $result;
     }
 
     /**
-     * Get a placeholder for a raw-block.
+     * Get a placeholder for a block.
      * 
      * @param int $index
      * @return string
@@ -151,28 +166,5 @@ class RenderEngine
     private function getBlockPlaceholder($index)
     {
         return str_replace('#', $index, '@__raw_block_#__@');
-    }
-
-    /**
-     * Add php-tags to a string.
-     * 
-     * @param string $rawContent
-     * @return string
-     */
-    private function surroundUncompiledContent($rawContent)
-    {
-        return '?>' . $rawContent . '<?php';
-    }
-
-    /**
-     * Append the content to the condition.
-     * 
-     * @param string $rawCondition
-     * @param string $rawContent
-     * @return string
-     */
-    private function prepareCondition($rawCondition, $rawContent)
-    {
-        return $rawCondition . ' {' . $rawContent . ' }';
     }
 }

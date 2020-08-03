@@ -39,7 +39,7 @@ class View
         $this->name = $name;
         $this->data = $data;
 
-        $this->renderEngine = new \Caravy\View\RenderEngine($this->loadRawLayout(), $this->data);
+        $this->renderEngine = new \Caravy\View\RenderEngine($this->loadLayout(), $this->data);
     }
 
     /**
@@ -50,6 +50,7 @@ class View
     public function render()
     {
         echo $this->renderEngine->compile();
+        return $this;
     }
 
     /**
@@ -57,7 +58,7 @@ class View
      * 
      * @return string
      */
-    private function loadRawLayout()
+    private function loadLayout()
     {
         $dir = __DIR__ . '/../../../layouts/';
         $file = $dir . $this->name . '.layout.php';

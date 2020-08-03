@@ -4,11 +4,9 @@ namespace Caravy\Page;
 
 class PageController
 {
-    private $container;
-
-    public function __construct(\Caravy\Container\Container $container)
+    public function __construct()
     {
-        $this->container = $container;
+
     }
 
     public function index()
@@ -17,8 +15,10 @@ class PageController
             'title' => 'Hallo Welt!',
             'params' => [
                 'key1' => 'Eintrag 1',
-                'key2' => 'Eintrag 2'
-            ]
+                'key2' => 'Eintrag 2',
+                'key3' => 'Eintrag 3'
+            ],
+            'footer' => 'footer note'
         ]);
         $view->render();
     }

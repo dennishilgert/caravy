@@ -5,6 +5,31 @@ namespace Caravy\Support;
 class Arr
 {
     /**
+     * Check wether the given input is an array.
+     * 
+     * @param mixed $var
+     * @return bool
+     */
+    public static function isArr($var)
+    {
+        return is_array($var);
+    }
+
+    /**
+     * Check wether the array is associative.
+     * 
+     * @param array $array
+     * @return bool
+     */
+    public static function assoc($array)
+    {
+        if (array() === $array) {
+            return false;
+        }
+        return array_keys($array) !== range(0, count($array) - 1);
+    }
+
+    /**
      * Get the first element of an array.
      * 
      * @param array $array
@@ -14,8 +39,8 @@ class Arr
     {
         if (static::assoc($array)) {
             $firstPair = [];
-            $lastPair[array_key_first($array)] = $array[array_key_first($array)];
-            return $lastPair;
+            $firstPair[array_key_first($array)] = $array[array_key_first($array)];
+            return $firstPair;
         }
         return $array[0];
     }
@@ -52,20 +77,6 @@ class Arr
     }
 
     /**
-     * Check wether the array is associative.
-     * 
-     * @param array $array
-     * @return bool
-     */
-    public static function assoc($array)
-    {
-        if (array() === $array) {
-            return false;
-        }
-        return array_keys($array) !== range(0, count($array) - 1);
-    }
-
-    /**
      * Add an element to an array.
      * 
      * @param array $array
@@ -95,7 +106,7 @@ class Arr
     public static function get($array, $key)
     {
         if (static::assoc($array)) {
-            if (static::has($array, $key)) {
+            if (static::contains($array, $key)) {
                 return $array[$key];
             }
         }
@@ -111,7 +122,7 @@ class Arr
      */
     public static function remove($array, $key)
     {
-        if (static::has($array, $key)) {
+        if (static::contains($array, $key)) {
             if (static::assoc($array)) {
                 unset($array[$key]);
             } else {
@@ -132,7 +143,7 @@ class Arr
      * @param mixed $key
      * @return bool
      */
-    public static function has($array, $key)
+    public static function contains($array, $key)
     {
         if (static::assoc($array)) {
             return array_key_exists($key, $array);

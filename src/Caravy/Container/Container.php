@@ -12,7 +12,7 @@ class Container
     private $sharedInstances;
 
     /**
-     * Create a new InstanceFactory instance.
+     * Create a new instance-factory instance.
      * 
      * @return void
      */
@@ -22,7 +22,7 @@ class Container
     }
 
     /**
-     * Create or get instance-object.
+     * Create or get an instance-object.
      * 
      * @param string $instance
      * @return object|false
@@ -69,7 +69,7 @@ class Container
     /**
      * Get dependencies as instance-objects.
      * 
-     * @param \ReflectionParamater[] $params
+     * @param \ReflectionParamater[] $constrcutorDependencies
      * @return object[]
      */
     private function provideDependencies($constrcutorDependencies)
