@@ -2,6 +2,8 @@
 
 namespace Caravy\Container;
 
+use Caravy\Support\Str;
+
 class Container
 {
     /**
@@ -47,6 +49,9 @@ class Container
      */
     private function new($instance)
     {
+        if ($instance === Str::prepend(get_class($this), '\\')) {
+            return $this;
+        }
         $reflectionClass = new \ReflectionClass($instance);
         if (is_null($reflectionClass)) {
             return null;

@@ -4,9 +4,16 @@ namespace Caravy\User;
 
 class UserController
 {
-    public function __construct()
+    /**
+     * Instance of the container.
+     * 
+     * @var \Caravy\Container\Container
+     */
+    private $container;
+
+    public function __construct(\Caravy\Container\Container $container)
     {
-        
+        $this->container = $container;
     }
 
     public function create()
@@ -16,7 +23,15 @@ class UserController
 
     public function edit($userId)
     {
-        var_dump($userId);
+        view('user/edit', [
+            'title' => 'Benutzer bearbeiten',
+            'action' => 'test',
+            'id' => $userId,
+            'username' => 'rischard',
+            'firstName' => 'Richi',
+            'lastName' => 'Harung',
+            'email' => 'mahrung@gmail.com',
+        ], $this->container);
     }
 
     public function delete($userId)
@@ -27,11 +42,12 @@ class UserController
     public function profile($username)
     {
         view('user/profile', [
+            'title' => 'Profil von ' . $username,
             'id' => '3',
             'username' => $username,
             'firstName' => 'Michael',
             'lastName' => 'Jordan',
             'email' => 'michael@gmail.com',
-        ]);
+        ], $this->container);
     }
 }

@@ -30,16 +30,16 @@ class View
      * 
      * @param \Caravy\View\RenderEngine $renderEngine
      * @param string $name
-     * @param string $path
      * @param array $data
+     * @param \Caravy\Container\Container $container
      * @return void
      */
-    public function __construct($name, $data)
+    public function __construct($name, $data, $container)
     {
         $this->name = $name;
         $this->data = $data;
 
-        $this->renderEngine = new \Caravy\View\RenderEngine($this->loadLayout(), $this->data);
+        $this->renderEngine = new \Caravy\View\RenderEngine($this->loadLayout(), $this->data, $container->provide(\Caravy\View\CompilerRegistry::class));
     }
 
     /**

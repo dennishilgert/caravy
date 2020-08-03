@@ -23,8 +23,8 @@ Simple PHP framework, following the mvc-pattern
 ###### Tags:
 - [x] @yield
 - [ ] @csrf
-- [ ] @method
-- [ ] @include
+- [x] @method
+- [x] @include
 
 #### Database:
 - add database integration as middleware

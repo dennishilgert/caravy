@@ -29,17 +29,25 @@ class RenderEngine
     private $data;
 
     /**
+     * Instance of the compiler-registry.
+     * 
+     * @var \Caravy\View\CompilerRegistry
+     */
+    private $compilerRegistry;
+
+    /**
      * Create a new render-engine instance.
      * 
      * @param string $layout
      * @param array $data
      * @return void
      */
-    public function __construct($layout, $data)
+    public function __construct($layout, $data, $compilerRegistry)
     {
         $this->blocks = [];
         $this->layout = $layout;
         $this->data = $data;
+        $this->compilerRegistry = $compilerRegistry;
     }
 
     /**
@@ -49,7 +57,7 @@ class RenderEngine
      */
     public function compile()
     {
-        $this->layout = $this->storeYields();
+        $this->layout = $this->storeTags();
         $this->layout = $this->storeStatements();
 
         $restoredLayout = preg_replace_callback('/' . $this->getBlockPlaceholder('(\d+)') . '/', function ($matches) {
@@ -74,14 +82,22 @@ class RenderEngine
      * Extract the yield-tags from the layout and replace
      * them with a placeholder.
      * 
-     * @return string
+     * @return string|false
      */
-    private function storeYields()
+    private function storeTags()
     {
-        $result = preg_replace_callback('/@yield\s?\(\'(?<variable>[\w\$\-\>]+)\'\)\;/', function ($match) {
-            $variable = $match['variable'];
+        $result = preg_replace_callback('/@(?<type>[\w]+)\s?\(\'(?<parameter>[\w\$\-\>\/]+)\'\)\;/', function ($match) {
+            $type = $match['type'];
 
-            return $this->storeBlock(Str::asymetric($variable, '<?php echo escape($', '); ?>'));
+            $compiler = $this->compilerRegistry->getCompiler($type);
+            if ($compiler === false) {
+                // throw bad-compiler exception
+                return false;
+            }
+            $parameter = $match['parameter'];
+            $compiled = $compiler->compile($parameter, $this->data);
+
+            return $this->storeBlock($compiled);
         }, $this->layout);
 
         return $result;

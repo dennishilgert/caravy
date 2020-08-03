@@ -19,8 +19,8 @@ function escape(string $input)
  * @param array $data
  * @return \Caravy\View\View
  */
-function view($name, $data)
+function view($name, $data, $container)
 {
-    $view = new \Caravy\View\View($name, $data);
+    $view = new \Caravy\View\View($name, $data, $container);
     return $view->render();
 }
