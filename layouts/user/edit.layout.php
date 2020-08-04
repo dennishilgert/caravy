@@ -4,18 +4,19 @@
 @include('components/header');
 
 <body>
+    <h3>ID:</h3>
+    <p>@yield('id');</p>
     <form action="@yield('action');" method="POST">
         @method('PUT');
-        <h3>ID:</h3>
-        <p>@yield('id');</p>
+        <input type="hidden" name="id" value="@yield('id');">
         <h3>Benutzername</h3>
-        <input type="text" name="username" id="username" value="@yield('username');">
+        <input type="text" name="username" value="@yield('username');">
         <h3>Vorname</h3>
-        <input type="text" name="firstName" id="firstName" value="@yield('firstName');">
+        <input type="text" name="firstName" value="@yield('firstName');">
         <h3>Nachname</h3>
-        <input type="text" name="lastName" id="lastName" value="@yield('lastName');">
+        <input type="text" name="lastName" value="@yield('lastName');">
         <h3>Email-Adresse</h3>
-        <input type="text" name="email" id="email" value="@yield('email');">
+        <input type="text" name="email" value="@yield('email');">
         <br>
         <br>
         <input type="submit" value="Änderungen speichern">

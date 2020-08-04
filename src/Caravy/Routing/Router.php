@@ -140,10 +140,13 @@ class Router
             return;
         }
         $params = $resolveResult->getParams();
-        $executeResult = call_user_func_array(array($routeController, $route->getAction()), $params);
-        if ($executeResult === false) {
+        $response = call_user_func_array(array($routeController, $route->getAction()), $params);
+        if ($response === false) {
             // throw bad-function exception
             return;
+        }
+        if (is_null($response) === false) {
+            $response->send();
         }
     }
 }

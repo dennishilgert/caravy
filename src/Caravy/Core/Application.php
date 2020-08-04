@@ -27,15 +27,23 @@ class Application
 
         $router->any('index', '\Caravy\Page\PageController@index', 'index');
 
+        $router->get('login', '\Caravy\User\UserController@login', 'login');
+        $router->post('login', '\Caravy\User\UserActionHandler@handleLogin');
+
+        $router->get('logout', '\Caravy\User\UserActionHandler@handleLogout', 'logout');
+
         $router->get('user/create', '\Caravy\User\UserController@create');
         $router->post('user/create', '\Caravy\User\UserActionHandler@handleCreate');
 
         $router->get('user/edit/{id}', '\Caravy\User\UserController@edit');
         $router->put('user/edit', '\Caravy\User\UserActionHandler@handleEdit');
 
-        $router->delete('user/delete/{id}', '\Caravy\User\UserActionHandler@handleDelete');
+        $router->get('user/delete/{id}', '\Caravy\User\UserController@delete');
+        $router->delete('user/delete', '\Caravy\User\UserActionHandler@handleDelete');
 
         $router->get('user/{name}', '\Caravy\User\UserController@profile');
+
+        $router->get('users', '\Caravy\User\UserController@userList', 'users');
 
         $router->handleRequest(\Caravy\Routing\RequestFactory::current());
     }

@@ -28,6 +28,18 @@ class UserMiddleware extends AbstractMiddleware
     }
 
     /**
+     * Check if a username already exists.
+     * 
+     * @param string $username
+     * @return bool
+     */
+    public function exists($username)
+    {
+        $id = $this->findFirst('id', 'username', $username);
+        return empty($id) === false;
+    }
+
+    /**
      * Create a new user.
      * 
      * @param string $username
@@ -49,6 +61,16 @@ class UserMiddleware extends AbstractMiddleware
             'lastName' => $lastName,
             'email' => $email,
             'passHash' => $passHash
+        ]);
+    }
+
+    public function delete($id)
+    {
+        $tableName = $this->getTableName();
+
+        $statement = $this->pdo->prepare("DELETE FROM `$tableName` WHERE id = :id");
+        return $statement->execute([
+            'id' => $id,
         ]);
     }
 

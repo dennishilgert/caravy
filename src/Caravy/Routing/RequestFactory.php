@@ -19,6 +19,7 @@ class RequestFactory
         $requestMethod = $_SERVER['REQUEST_METHOD'];
         if (empty($_POST['_method']) === false) {
             $requestMethod = $_POST['_method'];
+            unset($_POST['_method']);
         }
         $request = new \Caravy\Routing\Request($requestMethod, $queryString, $_POST);
         return $request;
