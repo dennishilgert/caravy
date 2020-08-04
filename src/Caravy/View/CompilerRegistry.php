@@ -5,7 +5,7 @@ namespace Caravy\View;
 use Caravy\View\Compilers\CompilesCsrf;
 use Caravy\View\Compilers\CompilesInclude;
 use Caravy\View\Compilers\CompilesMethod;
-use Caravy\View\Compilers\CompilesYields;
+use Caravy\View\Compilers\CompilesYield;
 
 class CompilerRegistry
 {
@@ -28,7 +28,7 @@ class CompilerRegistry
         $this->register(new CompilesCsrf());
         $this->register(new CompilesInclude($container));
         $this->register(new CompilesMethod());
-        $this->register(new CompilesYields());
+        $this->register(new CompilesYield());
     }
 
     /**

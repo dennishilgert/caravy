@@ -18,15 +18,18 @@ class UserController
 
     public function create()
     {
-        var_dump('create');
+        view('user/create', [
+            'title' => 'Benutzer erstellen',
+            'action' => \Caravy\Routing\UrlHandler::makeUrl('user/create'),
+        ], $this->container);
     }
 
-    public function edit($userId)
+    public function edit($id)
     {
         view('user/edit', [
             'title' => 'Benutzer bearbeiten',
-            'action' => 'test',
-            'id' => $userId,
+            'action' => \Caravy\Routing\UrlHandler::makeUrl('user/edit'),
+            'id' => $id,
             'username' => 'rischard',
             'firstName' => 'Richi',
             'lastName' => 'Harung',
@@ -34,9 +37,9 @@ class UserController
         ], $this->container);
     }
 
-    public function delete($userId)
+    public function delete($id)
     {
-        var_dump($userId);
+        var_dump($id);
     }
 
     public function profile($username)

@@ -20,17 +20,20 @@ class Application
     {
         $this->container = new \Caravy\Container\Container();
 
+        $config = $this->container->provide(\Caravy\Core\Configuration::class);
+        define('BASE_URL', $config->getGeneralConfig()['baseUrl']);
+
         $router = $this->container->provide(\Caravy\Routing\Router::class);
 
         $router->any('index', '\Caravy\Page\PageController@index', 'index');
 
         $router->get('user/create', '\Caravy\User\UserController@create');
-        $router->post('user/create', '\Caravy\User\UserController@create');
+        $router->post('user/create', '\Caravy\User\UserActionHandler@handleCreate');
 
         $router->get('user/edit/{id}', '\Caravy\User\UserController@edit');
-        $router->put('user/edit', '\Caravy\User\UserController@edit');
+        $router->put('user/edit', '\Caravy\User\UserActionHandler@handleEdit');
 
-        $router->delete('user/delete/{id}', '\Caravy\User\UserController@delete');
+        $router->delete('user/delete/{id}', '\Caravy\User\UserActionHandler@handleDelete');
 
         $router->get('user/{name}', '\Caravy\User\UserController@profile');
 

@@ -17,19 +17,10 @@ class RequestFactory
         $queryString = rawurldecode($_SERVER['QUERY_STRING']);
         $queryString = trim($queryString, '/');
         $requestMethod = $_SERVER['REQUEST_METHOD'];
-        switch ($requestMethod) {
-            case 'POST':
-                if (empty($_POST['_method']) === false) {
-                    $requestMethod = $_POST['_method'];
-                }
-                break;
-            case 'GET':
-                if (empty($_GET['_method']) === false) {
-                    $requestMethod = $_GET['_method'];
-                }
-                break;
+        if (empty($_POST['_method']) === false) {
+            $requestMethod = $_POST['_method'];
         }
-        $request = new \Caravy\Routing\Request($requestMethod, $queryString);
+        $request = new \Caravy\Routing\Request($requestMethod, $queryString, $_POST);
         return $request;
     }
 }

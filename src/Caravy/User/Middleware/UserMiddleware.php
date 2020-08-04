@@ -2,7 +2,7 @@
 
 namespace Caravy\User\Middleware;
 
-use Caravy\Middleware\AbstractMiddleware;
+use Caravy\Database\AbstractMiddleware;
 
 class UserMiddleware extends AbstractMiddleware
 {

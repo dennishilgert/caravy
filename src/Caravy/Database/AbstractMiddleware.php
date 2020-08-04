@@ -1,6 +1,6 @@
 <?php
 
-namespace Caravy\Middleware;
+namespace Caravy\Database;
 
 use PDO;
 

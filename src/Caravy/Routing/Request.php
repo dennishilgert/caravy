@@ -34,13 +34,22 @@ class Request
      */
     private $baseSegment;
 
-    public function __construct($method, $uri)
+    /**
+     * Parameters passed with the http-method.
+     * 
+     * @var array
+     */
+    private $params;
+
+    public function __construct($method, $uri, $params)
     {
         $this->method = $method;
         $this->uri = $uri;
 
-        $this->segments = $this->convert($uri);
+        $this->segments = $this->split($uri);
         $this->baseSegment = Arr::first($this->segments);
+
+        $this->params = $params;
     }
 
     /**
@@ -49,7 +58,7 @@ class Request
      * @param string $uri
      * @return string[]
      */
-    private function convert($uri)
+    private function split($uri)
     {
         if (strpos($uri, '/') === false) {
             return [$uri];
@@ -59,7 +68,7 @@ class Request
     }
 
     /**
-     * Get the method of the current request.
+     * Get the method of the request.
      * 
      * @return string
      */
@@ -69,7 +78,7 @@ class Request
     }
 
     /**
-     * Get the uri of the current request.
+     * Get the uri of the request.
      * 
      * @return string
      */
@@ -79,7 +88,7 @@ class Request
     }
 
     /**
-     * Get the segments of the current request.
+     * Get the segments of the request.
      * 
      * @return array
      */
@@ -89,12 +98,22 @@ class Request
     }
 
     /**
-     * Get the base-segment of the current request.
+     * Get the base-segment of the request.
      * 
      * @return string
      */
     public function getBaseSegment()
     {
         return $this->baseSegment;
+    }
+
+    /**
+     * Get the params of the request.
+     * 
+     * @return array
+     */
+    public function getParams()
+    {
+        return $this->params;
     }
 }

@@ -17,11 +17,11 @@ class DatabaseManager
     public function __construct(\Caravy\Core\Configuration $config)
     {
         try {
-            $host = $config->getDatabaseConfig['host'];
-            $port = $config->getDatabaseConfig['port'];
-            $name = $config->getDatabaseConfig['name'];
-            $username = $config->getDatabaseConfig['username'];
-            $password = $config->getDatabaseConfig['password'];
+            $host = $config->getDatabaseConfig()['host'];
+            $port = $config->getDatabaseConfig()['port'];
+            $name = $config->getDatabaseConfig()['name'];
+            $username = $config->getDatabaseConfig()['username'];
+            $password = $config->getDatabaseConfig()['password'];
 
             $dsn = "mysql:host={$host};port={$port};dbname={$name};charset=utf8";
 

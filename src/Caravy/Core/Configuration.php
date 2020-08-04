@@ -11,6 +11,11 @@ class Configuration
         $this->config = require __DIR__ . '/../../../config.php';
     }
 
+    public function getGeneralConfig()
+    {
+        return $this->config['general'];
+    }
+
     public function getDatabaseConfig()
     {
         return $this->config['database'];

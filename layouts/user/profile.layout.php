@@ -1,3 +1,15 @@
+<!-- 
+    Used variables:
+
+    $title
+    $id
+    $username
+    $firstName
+    $lastName
+    $email
+    
+ -->
+
 <!DOCTYPE html>
 <html lang="en">
 

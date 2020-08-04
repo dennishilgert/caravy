@@ -84,14 +84,18 @@ class RouteResolver
      */
     private function extractParams($request, $route)
     {
-        $requestSegments = $request->getSegments();
-        $routeSegments = $route->getSegments();
-
         $params = [];
-        for ($i = 0; $i < count($routeSegments); $i++) {
-            if (empty(Route::matchParam($routeSegments[$i])) === false) {
-                array_push($params, $requestSegments[$i]);
+        if ($request->getMethod() === 'GET') {
+            $requestSegments = $request->getSegments();
+            $routeSegments = $route->getSegments();
+
+            for ($i = 0; $i < count($routeSegments); $i++) {
+                if (empty(Route::matchParam($routeSegments[$i])) === false) {
+                    array_push($params, $requestSegments[$i]);
+                }
             }
+        } else {
+            $params = $request->getParams();
         }
         return $params;
     }

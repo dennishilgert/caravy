@@ -4,7 +4,7 @@ namespace Caravy\View\Compilers;
 
 use Caravy\Support\Str;
 
-class CompilesYields extends AbstractCompiler
+class CompilesYield extends AbstractCompiler
 {
     public function getType()
     {
