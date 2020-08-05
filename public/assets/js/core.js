@@ -4,9 +4,42 @@
 
 document.addEventListener("submit", function (e) {
 	e.preventDefault();
+
 	var callback = function (status, response) {
-		document.getElementById("response").innerHTML = response;
+		if (status === 200) {
+			var data = JSON.parse(response);
+			Object.keys(data).forEach(function (key) {
+				switch (key) {
+					case "status":
+						if (data[key] == "error") {
+							var resetElements = document.getElementsByTagName("input");
+							for (let element of resetElements) {
+								element.blur();
+								if (element.hasAttribute("resetOnError")) {
+									element.value = "";
+								}
+							}
+						}
+						break;
+					case "message":
+						document.getElementById("response").innerHTML = data[key];
+						break;
+					case "redirect":
+						var location = data[key]["location"];
+						var delay = data[key]["delay"];
+						if (delay != null) {
+							setTimeout(function () {
+								window.location.replace(location);
+							}, delay * 1000);
+						} else {
+							window.location.replace(location);
+						}
+						break;
+				}
+			});
+		}
 	};
+
 	ajax("POST", e.target.getAttribute("action"), callback, e.target);
 });
 

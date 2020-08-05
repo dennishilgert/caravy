@@ -22,6 +22,8 @@
         <br>
         <input type="submit" value="Änderungen speichern">
     </form>
+
+    @include('components/footer');
 </body>
 
 </html>

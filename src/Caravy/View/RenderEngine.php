@@ -86,7 +86,7 @@ class RenderEngine
      */
     private function storeTags()
     {
-        $result = preg_replace_callback('/@(?<type>[\w]+)\s?\(\'(?<parameter>[\w\$\-\>\/]+)\'\)\;/', function ($match) {
+        $result = preg_replace_callback('/@(?<type>[\w]+)\s?\(\'(?<parameter>[\w\$\-\>\/\.]+)\'\)\;/', function ($match) {
             $type = $match['type'];
 
             $compiler = $this->compilerRegistry->getCompiler($type);

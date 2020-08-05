@@ -2,10 +2,10 @@
 
 namespace Caravy\User;
 
-use Caravy\Routing\Redirection;
-use Caravy\Routing\Response;
+use Caravy\Routing\Model\Redirection;
+use Caravy\Routing\Model\Response;
 use Caravy\Routing\UrlHandler;
-use Caravy\View\View;
+use Caravy\View\Model\View;
 
 class UserActionHandler
 {
@@ -49,14 +49,13 @@ class UserActionHandler
         $result = $this->authService->login($username, $password);
         if ($result === false) {
             // return invalid username or password
-            $response = new Response(false, new View('user/auth/login', [
-                'title' => 'Anmeldung',
-                'action' => UrlHandler::makeUrl('login'),
-                'info-message' => 'Der Benutzername und das Passwort stimmen nicht überein oder wurden nicht gefunden.'
-            ], $this->container));
-        } else {
-            $response = new Response(true, null, new Redirection('users'));
+            $response = new Response();
+            $response->err('Der Benutzername und das Passwort stimmen nicht überein oder wurden nicht gefunden.');
+            return $response;
         }
+        $response = new Response();
+        $response->ok();
+        $response->redirect('users');
         return $response;
     }
 
@@ -69,7 +68,9 @@ class UserActionHandler
     {
         $this->authService->logout();
 
-        $response = new Response(true, null, new Redirection('login'));
+        $response = new Response();
+        $response->ok();
+        $response->redirect('login');
         return $response;
     }
 

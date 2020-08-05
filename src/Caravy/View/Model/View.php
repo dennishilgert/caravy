@@ -1,6 +1,6 @@
 <?php
 
-namespace Caravy\View;
+namespace Caravy\View\Model;
 
 class View
 {
@@ -60,7 +60,7 @@ class View
      */
     private function loadLayout()
     {
-        $dir = __DIR__ . '/../../../layouts/';
+        $dir = __DIR__ . '/../../../../layouts/';
         $file = $dir . $this->name . '.layout.php';
         if (is_null($file)) {
             // throw bad-view-name exception

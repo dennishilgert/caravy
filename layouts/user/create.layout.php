@@ -4,7 +4,7 @@
 @include('components/header');
 
 <body>
-    <form action="@yield('action');" method="POST">
+    <form action="@yield('action');">
         <h3>Benutzername</h3>
         <input type="text" name="username" placeholder="Benutzername">
         <h3>Vorname</h3>
@@ -23,6 +23,8 @@
         <br>
         @message('info');
     </form>
+
+    @include('components/footer');
 </body>
 
 </html>

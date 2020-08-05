@@ -1,0 +1,1 @@
+<script src="@resource('assets/js/core.js');"></script>

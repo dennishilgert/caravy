@@ -3,6 +3,8 @@
 namespace Caravy\Routing;
 
 use Caravy\Support\Arr;
+use Caravy\Routing\Model\ResolveResult;
+use Caravy\Routing\Model\Route;
 
 class RouteResolver
 {
@@ -26,8 +28,8 @@ class RouteResolver
     /**
      * Resolve a request to get a valid route.
      * 
-     * @param \Caravy\Routing\Request $request
-     * @return \Caravy\Routing\ResolveResult|false
+     * @param \Caravy\Routing\Model\Request $request
+     * @return \Caravy\Routing\Model\ResolveResult|false
      */
     public function resolve($request)
     {
@@ -50,8 +52,8 @@ class RouteResolver
     /**
      * Compare a request with a route.
      * 
-     * @param \Caravy\Routing\Request $request
-     * @param \Caravy\Routing\Route $route
+     * @param \Caravy\Routing\Model\Request $request
+     * @param \Caravy\Routing\Model\Route $route
      * @return bool
      */
     private function compare($request, $route)
@@ -78,8 +80,8 @@ class RouteResolver
     /**
      * Extract params with a param-pattern from a request.
      * 
-     * @param \Caravy\Routing\Request $request
-     * @param \Caravy\Routing\Route $route
+     * @param \Caravy\Routing\Model\Request $request
+     * @param \Caravy\Routing\Model\Route $route
      * @return array
      */
     private function extractParams($request, $route)

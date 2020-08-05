@@ -10,7 +10,7 @@ class RequestFactory
     /**
      * Buold a request for the current url.
      * 
-     * @return \Caravy\Routing\Request
+     * @return \Caravy\Routing\Model\Request
      */
     public static function current()
     {
@@ -21,7 +21,7 @@ class RequestFactory
             $requestMethod = $_POST['_method'];
             unset($_POST['_method']);
         }
-        $request = new \Caravy\Routing\Request($requestMethod, $queryString, $_POST);
+        $request = new \Caravy\Routing\Model\Request($requestMethod, $queryString, $_POST);
         return $request;
     }
 }

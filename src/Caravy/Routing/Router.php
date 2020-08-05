@@ -2,6 +2,8 @@
 
 namespace Caravy\Routing;
 
+use Caravy\Routing\Model\Route;
+
 class Router
 {
     /**
@@ -112,7 +114,7 @@ class Router
     /**
      * Add a Route to the route-registry.
      * 
-     * @param \Caravy\Routing\Route $route
+     * @param \Caravy\Routing\Model\Route $route
      * @return void
      */
     private function addRoute($route)
@@ -123,7 +125,7 @@ class Router
     /**
      * Resolve a route and execute the defined function.
      * 
-     * @param \Caravy\Routing\Request $request
+     * @param \Caravy\Routing\Model\Request $request
      * @return void
      */
     public function handleRequest($request)
@@ -131,18 +133,22 @@ class Router
         $resolveResult = $this->routeResolver->resolve($request);
         if ($resolveResult === false) {
             // throw bad-request exception
+            var_dump('Bad-request exception: ');
+            var_dump($request);
             return;
         }
         $route = $resolveResult->getRoute();
         $routeController = $this->container->provide($route->getController());
         if ($routeController === false) {
             // throw bad-controller exception
+            var_dump('Bad-controller exception');
             return;
         }
         $params = $resolveResult->getParams();
         $response = call_user_func_array(array($routeController, $route->getAction()), $params);
         if ($response === false) {
             // throw bad-function exception
+            var_dump('Bad-function exception');
             return;
         }
         if (is_null($response) === false) {

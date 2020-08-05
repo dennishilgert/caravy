@@ -17,10 +17,10 @@ function escape(string $input)
  * 
  * @param string $name
  * @param array $data
- * @return \Caravy\View\View
+ * @return \Caravy\View\Model\View
  */
 function view($name, $data, $container)
 {
-    $view = new \Caravy\View\View($name, $data, $container);
+    $view = new \Caravy\View\Model\View($name, $data, $container);
     return $view->render();
 }

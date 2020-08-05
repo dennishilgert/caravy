@@ -6,7 +6,7 @@
 <body>
     <form action="@yield('action');" method="POST">
         @method('DELETE');
-        <input type="hidden" name="id" value="@yield('id');">
+        <input type="hidden" name="id" value="@yield('user->id');">
         <h3>ID</h3>
         <p>@yield('user->id');</p>
         <h3>Benutzername</h3>
@@ -16,6 +16,8 @@
         <br>
         <input type="submit" value="Benutzer löschen">
     </form>
+
+    @include('components/footer');
 </body>
 
 </html>

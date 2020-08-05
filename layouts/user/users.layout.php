@@ -23,6 +23,8 @@
         </tr>
         @endforeach
     </table>
+
+    @include('components/footer');
 </body>
 
 </html>

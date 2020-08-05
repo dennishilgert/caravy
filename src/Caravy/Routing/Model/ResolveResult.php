@@ -1,13 +1,13 @@
 <?php
 
-namespace Caravy\Routing;
+namespace Caravy\Routing\Model;
 
 class ResolveResult
 {
     /**
      * Resolved route intance.
      * 
-     * @var \Caravy\Routing\Route
+     * @var \Caravy\Routing\Model\Route
      */
     private $route;
 
@@ -21,7 +21,7 @@ class ResolveResult
     /**
      * Create a new resolve-result instance.
      * 
-     * @param \Caravy\Routing\Route $route
+     * @param \Caravy\Routing\Model\Route $route
      * @param array $params
      */
     public function __construct($route, $params)
@@ -33,7 +33,7 @@ class ResolveResult
     /**
      * Get the resolved route.
      * 
-     * @return \Caravy\Routing\Route
+     * @return \Caravy\Routing\Model\Route
      */
     public function getRoute()
     {

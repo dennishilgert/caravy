@@ -1,6 +1,6 @@
 <?php
 
-namespace Caravy\View\Compilers;
+namespace Caravy\View\Compiler;
 
 use Caravy\Support\Arr;
 use Caravy\Support\Str;

@@ -32,6 +32,8 @@
     <br>
     <h2>Email:</h2>
     @yield('user->email');
+
+    @include('components/footer');
 </body>
 
 </html>

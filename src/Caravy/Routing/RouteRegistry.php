@@ -16,7 +16,7 @@ class RouteRegistry
     /**
      * Register a new route.
      * 
-     * @param \Caravy\Routing\Route $route
+     * @param \Caravy\Routing\Model\Route $route
      * @return void
      */
     public function register($route)
@@ -27,9 +27,9 @@ class RouteRegistry
     /**
      * Get routes with equal method.
      * 
-     * @param \Caravy\Routing\Route[] $routes
+     * @param \Caravy\Routing\Model\Route[] $routes
      * @param string $method
-     * @return \Caravy\Routing\Route[]
+     * @return \Caravy\Routing\Model\Route[]
      */
     public function getByMethod($routes, $method)
     {
@@ -39,9 +39,9 @@ class RouteRegistry
     /**
      * Get routes with equal base-segment.
      * 
-     * @param \Caravy\Routing\Route[] $routes
+     * @param \Caravy\Routing\Model\Route[] $routes
      * @param string $baseSegment
-     * @return \Caravy\Routing\Route[]
+     * @return \Caravy\Routing\Model\Route[]
      */
     public function getByBaseSegment($routes, $baseSegment)
     {
@@ -51,10 +51,10 @@ class RouteRegistry
     /**
      * Get routes with an explicit variable-value.
      * 
-     * @param \Caravy\Routing\Route[] $routes
+     * @param \Caravy\Routing\Model\Route[] $routes
      * @param mixed $filter
      * @param string $filterName
-     * @return \Caravy\Routing\Route[]
+     * @return \Caravy\Routing\Model\Route[]
      */
     private function filterRoutes($routes, $filter, $filterName)
     {
@@ -70,8 +70,8 @@ class RouteRegistry
     /**
      * Get routes sorted by their name.
      * 
-     * @param \Caravy\Routing\Route[] $routes
-     * @return \Caravy\Routing\Route[]
+     * @param \Caravy\Routing\Model\Route[] $routes
+     * @return \Caravy\Routing\Model\Route[]
      */
     public function sortByName($routes = null)
     {
@@ -84,9 +84,9 @@ class RouteRegistry
     /**
      * Get routes sorted by a route-variable.
      * 
-     * @param \Caravy\Routing\Route[] $routes
+     * @param \Caravy\Routing\Model\Route[] $routes
      * @param string $sortName
-     * @return \Caravy\Routing\Route[]
+     * @return \Caravy\Routing\Model\Route[]
      */
     private function sortRoutes($routes, $sortName)
     {
@@ -100,7 +100,7 @@ class RouteRegistry
     /**
      * Get all registered routes.
      * 
-     * @return \Caravy\Routing\Route[]
+     * @return \Caravy\Routing\Model\Route[]
      */
     public function getRoutes()
     {

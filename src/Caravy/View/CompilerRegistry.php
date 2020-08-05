@@ -2,11 +2,12 @@
 
 namespace Caravy\View;
 
-use Caravy\View\Compilers\CompilesCsrf;
-use Caravy\View\Compilers\CompilesInclude;
-use Caravy\View\Compilers\CompilesMessage;
-use Caravy\View\Compilers\CompilesMethod;
-use Caravy\View\Compilers\CompilesYield;
+use Caravy\View\Compiler\CompilesCsrf;
+use Caravy\View\Compiler\CompilesInclude;
+use Caravy\View\Compiler\CompilesMessage;
+use Caravy\View\Compiler\CompilesMethod;
+use Caravy\View\Compiler\CompilesResource;
+use Caravy\View\Compiler\CompilesYield;
 
 class CompilerRegistry
 {
@@ -31,12 +32,13 @@ class CompilerRegistry
         $this->register(new CompilesMethod());
         $this->register(new CompilesYield());
         $this->register(new CompilesMessage());
+        $this->register(new CompilesResource());
     }
 
     /**
      * Register a new compiler.
      * 
-     * @param \Caravy\View\Compilers\AbstractCompiler $compiler
+     * @param \Caravy\View\Compiler\AbstractCompiler $compiler
      * @return void
      */
     public function register($compiler)
@@ -48,7 +50,7 @@ class CompilerRegistry
      * Get compiler by type.
      * 
      * @param string $compiles
-     * @return \Caravy\View\Compilers\AbstractCompiler|false
+     * @return \Caravy\View\Compiler\AbstractCompiler|false
      */
     public function getCompiler($compiles)
     {

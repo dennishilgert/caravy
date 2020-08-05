@@ -1,6 +1,6 @@
 <?php
 
-namespace Caravy\Routing;
+namespace Caravy\Routing\Model;
 
 use Caravy\Support\Arr;
 
