@@ -16,20 +16,22 @@
 @include('components/header');
 
 <body>
+    @message('info');
+    <br>
     <h2>ID:</h2>
-    @yield('id');
+    @yield('user->id');
     <br>
     <h2>Username:</h2>
-    @yield('username');
+    @yield('user->username');
     <br>
     <h2>First name:</h2>
-    @yield('firstName');
+    @yield('user->first_name');
     <br>
     <h2>Last name:</h2>
-    @yield('lastName');
+    @yield('user->last_name');
     <br>
     <h2>Email:</h2>
-    @yield('email');
+    @yield('user->email');
 </body>
 
 </html>

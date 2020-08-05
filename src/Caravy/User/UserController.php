@@ -53,11 +53,7 @@ class UserController
         view('user/edit', [
             'title' => 'Benutzer bearbeiten',
             'action' => UrlHandler::makeUrl('user/edit'),
-            'id' => $id,
-            'username' => $user->username,
-            'firstName' => $user->first_name,
-            'lastName' => $user->last_name,
-            'email' => $user->email,
+            'user' => $user,
         ], $this->container);
     }
 
@@ -72,8 +68,7 @@ class UserController
         view('user/delete', [
             'title' => 'Benutzer löschen',
             'action' => UrlHandler::makeUrl('user/delete'),
-            'id' => $id,
-            'username' => $user->username,
+            'user' => $user,
         ], $this->container);
     }
 
@@ -87,11 +82,7 @@ class UserController
         }
         view('user/profile', [
             'title' => 'Profil von ' . $username,
-            'id' => $user->id,
-            'username' => $username,
-            'firstName' => $user->first_name,
-            'lastName' => $user->last_name,
-            'email' => $user->email,
+            'user' => $user,
         ], $this->container);
     }
 

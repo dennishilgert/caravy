@@ -76,28 +76,42 @@ class UserActionHandler
     public function handleCreate($username, $firstName, $lastName, $email, $password, $passwordRepeat)
     {
         if ($password !== $passwordRepeat) {
-            var_dump('The passwords do not match');
-            return false;
+            return new Response(false, new View('user/create', [
+                'title' => 'Benutzer erstellen',
+                'action' => UrlHandler::makeUrl('user/create'),
+                'info-message' => 'Die Passwörter stimmen nicht überein.',
+            ], $this->container));
         }
         if ($this->userMiddleware->exists($username)) {
-            var_dump('A user with the username "' . $username . '" already exists');
-            return false;
+            return new Response(false, new View('user/create', [
+                'title' => 'Benutzer erstellen',
+                'action' => UrlHandler::makeUrl('user/create'),
+                'info-message' => 'Ein Benutzer mit dem Namen "' . $username . '" ist bereits vorhanden.',
+            ], $this->container));
         }
         $result = $this->userMiddleware->create($username, $firstName, $lastName, $email, $password);
         if ($result === false) {
-            // throw bad-create-data exception
-            var_dump('Bad-update-data exception with username ' . $username);
-            return false;
+            return new Response(false, new View('user/create', [
+                'title' => 'Benutzer erstellen',
+                'action' => UrlHandler::makeUrl('user/create'),
+                'info-message' => 'Der Benutzer mit dem Namen "' . $username . '" konnte nicht erstellt werden.',
+            ], $this->container));
         }
-        \Caravy\Routing\UrlHandler::redirect('user/' . $username);
-        return true;
+        $user = $this->userMiddleware->findFirstModel('username', $username);
+        return new Response(true, new View('user/profile', [
+            'title' => 'Profil von ' . $user->username,
+            'user' => $user,
+            'info-message' => 'Der Benutzer wurde erfolgreich erstellt.',
+        ], $this->container));
     }
 
-    public function handleEdit($id, $username, $firstName, $lastName, $email)
+    public function handleEdit($id, $oldUsername, $username, $firstName, $lastName, $email)
     {
-        if ($this->userMiddleware->exists($username)) {
-            var_dump('A user with the username "' . $username . '" already exists');
-            return false;
+        if ($oldUsername !== $username) {
+            if ($this->userMiddleware->exists($username)) {
+                var_dump('A user with the username "' . $username . '" already exists');
+                return false;
+            }
         }
         $result = $this->userMiddleware->updateDetails($id, $username, $firstName, $lastName, $email);
         if ($result === false) {
@@ -105,10 +119,11 @@ class UserActionHandler
             var_dump('Bad-update-data exception with id ' . $id);
             return false;
         }
-        view('user/edit', [
+        $user = $this->userMiddleware->findFirstModel('id', $id);
+        return new Response(true, new View('user/edit', [
             'title' => 'Benutzer bearbeiten',
-        ], $this->container);
-        return true;
+            'user' => $user,
+        ], $this->container));
     }
 
     public function handleDelete($id)

@@ -20,6 +20,8 @@
         <br>
         <br>
         <input type="submit" value="Benutzer erstellen">
+        <br>
+        @message('info');
     </form>
 </body>
 

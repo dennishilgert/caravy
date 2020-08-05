@@ -8,9 +8,9 @@
         @method('DELETE');
         <input type="hidden" name="id" value="@yield('id');">
         <h3>ID</h3>
-        <p>@yield('id');</p>
+        <p>@yield('user->id');</p>
         <h3>Benutzername</h3>
-        <p>@yield('username');</p>
+        <p>@yield('user->username');</p>
         <br>
         <p>Sind Sie sicher, dass Sie den Benutzer löschen möchten?</p>
         <br>
