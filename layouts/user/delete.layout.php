@@ -15,6 +15,8 @@
         <p>Sind Sie sicher, dass Sie den Benutzer löschen möchten?</p>
         <br>
         <input type="submit" value="Benutzer löschen">
+        <br>
+        <div id="response"></div>
     </form>
 
     @include('components/footer');

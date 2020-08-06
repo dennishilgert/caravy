@@ -21,6 +21,8 @@
         <br>
         <br>
         <input type="submit" value="Änderungen speichern">
+        <br>
+        <div id="response"></div>
     </form>
 
     @include('components/footer');

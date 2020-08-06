@@ -66,6 +66,8 @@ class Route
      * @param string $method
      * @param string $uri
      * @param string $controllerAction
+     * @param string $name
+     * @return void
      */
     public function __construct($methods, $uri, $controllerAction, $name)
     {

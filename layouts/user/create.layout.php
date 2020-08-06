@@ -21,7 +21,7 @@
         <br>
         <input type="submit" value="Benutzer erstellen">
         <br>
-        @message('info');
+        <div id="response"></div>
     </form>
 
     @include('components/footer');

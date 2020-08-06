@@ -30,7 +30,7 @@ class Application
         $router->get('login', '\Caravy\User\UserController@login', 'login');
         $router->post('login', '\Caravy\User\UserActionHandler@handleLogin');
 
-        $router->get('logout', '\Caravy\User\UserActionHandler@handleLogout', 'logout');
+        $router->get('logout', '\Caravy\User\UserController@logout', 'logout');
 
         $router->get('user/create', '\Caravy\User\UserController@create');
         $router->post('user/create', '\Caravy\User\UserActionHandler@handleCreate');

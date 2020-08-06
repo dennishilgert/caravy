@@ -33,12 +33,14 @@ class Response
         if (is_null($message) === false) {
             $this->data['message'] = $message;
         }
+        return $this;
     }
 
     public function err($message)
     {
         $this->data['status'] = 'error';
         $this->data['message'] = $message;
+        return $this;
     }
 
     public function redirect($location, $delay = null)

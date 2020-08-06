@@ -2,20 +2,10 @@
 
 namespace Caravy\User;
 
-use Caravy\Routing\Model\Redirection;
 use Caravy\Routing\Model\Response;
-use Caravy\Routing\UrlHandler;
-use Caravy\View\Model\View;
 
 class UserActionHandler
 {
-    /**
-     * Instance of the container.
-     * 
-     * @var \Caravy\Container\Container
-     */
-    private $container;
-
     /**
      * Instance of the user-middleware.
      * 
@@ -30,9 +20,14 @@ class UserActionHandler
      */
     private $authService;
 
+    /**
+     * Create a new user-action-handler instance.
+     * 
+     * @param \Caravy\Container\Container $container
+     * @return void
+     */
     public function __construct(\Caravy\Container\Container $container)
     {
-        $this->container = $container;
         $this->userMiddleware = $container->provide(\Caravy\User\Middleware\UserMiddleware::class);
         $this->authService = $container->provide(\Caravy\User\AuthService::class);
     }
@@ -48,94 +43,85 @@ class UserActionHandler
     {
         $result = $this->authService->login($username, $password);
         if ($result === false) {
-            // return invalid username or password
-            $response = new Response();
-            $response->err('Der Benutzername und das Passwort stimmen nicht überein oder wurden nicht gefunden.');
-            return $response;
+            return (new Response)->err('Der Benutzername und das Passwort stimmen nicht überein oder wurden nicht gefunden.');
         }
-        $response = new Response();
-        $response->ok();
-        $response->redirect('users');
-        return $response;
+        return (new Response)->ok()->redirect('users');
     }
 
     /**
-     * Handle the sent logout-demand.
+     * Handle the logout demand.
      * 
-     * @return true
+     * @return \Caravy\Routing\Model\Response
      */
     public function handleLogout()
     {
         $this->authService->logout();
-
-        $response = new Response();
-        $response->ok();
-        $response->redirect('login');
-        return $response;
+        return (new Response)->ok()->redirect('login');
     }
 
+    /**
+     * Handle the create demand.
+     * 
+     * @param string $username
+     * @param string $firstName
+     * @param string $lastName
+     * @param string $email
+     * @param string $password
+     * @param string $passwordRepeat
+     * @return \Caravy\Routing\Model\Response
+     */
     public function handleCreate($username, $firstName, $lastName, $email, $password, $passwordRepeat)
     {
         if ($password !== $passwordRepeat) {
-            return new Response(false, new View('user/create', [
-                'title' => 'Benutzer erstellen',
-                'action' => UrlHandler::makeUrl('user/create'),
-                'info-message' => 'Die Passwörter stimmen nicht überein.',
-            ], $this->container));
+            return (new Response)->err('Die Passwörter stimmen nicht überein.');
         }
         if ($this->userMiddleware->exists($username)) {
-            return new Response(false, new View('user/create', [
-                'title' => 'Benutzer erstellen',
-                'action' => UrlHandler::makeUrl('user/create'),
-                'info-message' => 'Ein Benutzer mit dem Namen "' . $username . '" ist bereits vorhanden.',
-            ], $this->container));
+            return (new Response)->err('Ein Benutzer mit diesem Benutzernamen ist bereits vorhanden.');
         }
         $result = $this->userMiddleware->create($username, $firstName, $lastName, $email, $password);
         if ($result === false) {
-            return new Response(false, new View('user/create', [
-                'title' => 'Benutzer erstellen',
-                'action' => UrlHandler::makeUrl('user/create'),
-                'info-message' => 'Der Benutzer mit dem Namen "' . $username . '" konnte nicht erstellt werden.',
-            ], $this->container));
+            return (new Response)->err('Der Benutzer konnte nicht erstellt werden.');
         }
-        $user = $this->userMiddleware->findFirstModel('username', $username);
-        return new Response(true, new View('user/profile', [
-            'title' => 'Profil von ' . $user->username,
-            'user' => $user,
-            'info-message' => 'Der Benutzer wurde erfolgreich erstellt.',
-        ], $this->container));
+        return (new Response)->ok('Der Benutzer wurde erstellt.');
     }
 
+    /**
+     * Handle the edit demand.
+     * 
+     * @param string $id
+     * @param string $oldUsername
+     * @param string $username
+     * @param string $firstName
+     * @param string $lastName
+     * @param string $email
+     * @return \Caravy\Routing\Model\Response
+     */
     public function handleEdit($id, $oldUsername, $username, $firstName, $lastName, $email)
     {
         if ($oldUsername !== $username) {
             if ($this->userMiddleware->exists($username)) {
-                var_dump('A user with the username "' . $username . '" already exists');
-                return false;
+                return (new Response)->err('Ein Benutzer mit diesem Benutzernamen ist bereits vorhanden.');
             }
         }
         $result = $this->userMiddleware->updateDetails($id, $username, $firstName, $lastName, $email);
         if ($result === false) {
-            // throw bad-update-data exception
-            var_dump('Bad-update-data exception with id ' . $id);
-            return false;
+            return (new Response)->err('Die Benutzerdaten konnten nicht aktualisiert werden.');
         }
-        $user = $this->userMiddleware->findFirstModel('id', $id);
-        return new Response(true, new View('user/edit', [
-            'title' => 'Benutzer bearbeiten',
-            'user' => $user,
-        ], $this->container));
+        return (new Response)->ok('Die Benutzerdaten wurden aktualsiert.');
     }
 
+    /**
+     * Handle the delete demand.
+     * 
+     * @param string $id
+     * @return \Caravy\Routing\Model\Response
+     */
     public function handleDelete($id)
     {
         $result = $this->userMiddleware->delete($id);
         if ($result === false) {
-            // throw bad-update-data exception
-            var_dump('Bad-update-data exception with id ' . $id);
-            return false;
+            return (new Response)->err('Der Benutzer konnte nicht gelöscht werden.');
         }
-        \Caravy\Routing\UrlHandler::redirect('users');
-        return true;
+        return (new Response)->ok('Der Benutzer wurde gelöscht.');
     }
 }

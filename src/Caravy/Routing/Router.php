@@ -7,6 +7,13 @@ use Caravy\Routing\Model\Route;
 class Router
 {
     /**
+     * Instance of the container.
+     * 
+     * @var \Caravy\Container\Container
+     */
+    private $container;
+
+    /**
      * Instance of the route-registry.
      * 
      * @var \Caravy\Routing\RouteRegistry
@@ -21,13 +28,6 @@ class Router
     private $routeResolver;
 
     /**
-     * Instance of the container.
-     * 
-     * @var \Caravy\Container\Container
-     */
-    private $container;
-
-    /**
      * All methods the router can handle.
      * 
      * @var array
@@ -39,23 +39,23 @@ class Router
      * 
      * @param \Caravy\Routing\RouteRegistry $routeRegistry
      */
-    public function __construct(\Caravy\Routing\RouteRegistry $routeRegistry, \Caravy\Routing\RouteResolver $routeResolver, \Caravy\Container\Container $container)
+    public function __construct(\Caravy\Container\Container $container)
     {
-        $this->routeRegistry = $routeRegistry;
-        $this->routeResolver = $routeResolver;
         $this->container = $container;
+        $this->routeRegistry = $container->provide(\Caravy\Routing\RouteRegistry::class);
+        $this->routeResolver = $container->provide(\Caravy\Routing\RouteResolver::class);
     }
 
     /**
      * Register a new route corresponding to POST method.
      * 
      * @param string $uri
-     * @param mixed $closure
+     * @param string $controllerAction
      * @return void
      */
-    public function get($uri, $closure, $name = null)
+    public function get($uri, $controllerAction, $name = null)
     {
-        $route = new Route(['GET'], $uri, $closure, $name);
+        $route = new Route(['GET'], $uri, $controllerAction, $name);
         $this->addRoute($route);
     }
 
@@ -63,12 +63,12 @@ class Router
      * Register a new route corresponding to POST method.
      * 
      * @param string $uri
-     * @param \Closure $closure
+     * @param string $controllerAction
      * @return void
      */
-    public function post($uri, $closure, $name = null)
+    public function post($uri, $controllerAction, $name = null)
     {
-        $route = new Route(['POST'], $uri, $closure, $name);
+        $route = new Route(['POST'], $uri, $controllerAction, $name);
         $this->addRoute($route);
     }
 
@@ -76,12 +76,12 @@ class Router
      * Register a new route corresponding to PUT method.
      * 
      * @param string $uri
-     * @param \Closure $closure
+     * @param string $controllerAction
      * @return void
      */
-    public function put($uri, $closure, $name = null)
+    public function put($uri, $controllerAction, $name = null)
     {
-        $route = new Route(['PUT'], $uri, $closure, $name);
+        $route = new Route(['PUT'], $uri, $controllerAction, $name);
         $this->addRoute($route);
     }
 
@@ -89,12 +89,12 @@ class Router
      * Register a new route corresponding to DELETE method.
      * 
      * @param string $uri
-     * @param \Closure $closure
+     * @param string $controllerAction
      * @return void
      */
-    public function delete($uri, $closure, $name = null)
+    public function delete($uri, $controllerAction, $name = null)
     {
-        $route = new Route(['DELETE'], $uri, $closure, $name);
+        $route = new Route(['DELETE'], $uri, $controllerAction, $name);
         $this->addRoute($route);
     }
 
@@ -102,12 +102,12 @@ class Router
      * Register a new route corresponding to any method.
      * 
      * @param string $uri
-     * @param \Closure $closure
+     * @param string $controllerAction
      * @return void
      */
-    public function any($uri, $closure, $name = null)
+    public function any($uri, $controllerAction, $name = null)
     {
-        $route = new Route($this->methods, $uri, $closure, $name);
+        $route = new Route($this->methods, $uri, $controllerAction, $name);
         $this->addRoute($route);
     }
 
@@ -132,23 +132,31 @@ class Router
     {
         $resolveResult = $this->routeResolver->resolve($request);
         if ($resolveResult === false) {
-            // throw bad-request exception
-            var_dump('Bad-request exception: ');
-            var_dump($request);
+            view('error', [
+                'title' => 'Error 404',
+                'code' => '404 Not found',
+                'message' => 'Die angeforderte Seite konnte nicht gefunden werden.',
+            ], $this->container);
             return;
         }
         $route = $resolveResult->getRoute();
         $routeController = $this->container->provide($route->getController());
         if ($routeController === false) {
-            // throw bad-controller exception
-            var_dump('Bad-controller exception');
+            view('error', [
+                'title' => 'Error 400',
+                'code' => '400 Bad request',
+                'message' => 'Die angegebene Controller existiert nicht.',
+            ], $this->container);
             return;
         }
         $params = $resolveResult->getParams();
         $response = call_user_func_array(array($routeController, $route->getAction()), $params);
         if ($response === false) {
-            // throw bad-function exception
-            var_dump('Bad-function exception');
+            view('error', [
+                'title' => 'Error 400',
+                'code' => '400 Bad request',
+                'message' => 'Die angegebene Funktion existiert nicht.',
+            ], $this->container);
             return;
         }
         if (is_null($response) === false) {
