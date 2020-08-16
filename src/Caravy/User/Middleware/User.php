@@ -7,7 +7,7 @@ class User
     /**
      * Id of the user.
      * 
-     * @var string
+     * @var int
      */
     public $id;
 

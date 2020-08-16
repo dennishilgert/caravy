@@ -7,18 +7,25 @@ use Caravy\Routing\Model\Response;
 class UserActionHandler
 {
     /**
-     * Instance of the user-middleware.
+     * Instance of the user-middleware-object.
      * 
      * @var \Caravy\User\Middleware\UserMiddleware
      */
     private $userMiddleware;
 
     /**
-     * Instance of the auth-service.
+     * Instance of the auth-service-object.
      * 
      * @var \Caravy\User\AuthService
      */
     private $authService;
+
+    /**
+     * Instance of the permission-service-object.
+     * 
+     * @var \Caravy\Permission\PermissionService
+     */
+    private $permissionService;
 
     /**
      * Create a new user-action-handler instance.
@@ -30,6 +37,7 @@ class UserActionHandler
     {
         $this->userMiddleware = $container->provide(\Caravy\User\Middleware\UserMiddleware::class);
         $this->authService = $container->provide(\Caravy\User\AuthService::class);
+        $this->permissionService = $container->provide(\Caravy\Permission\PermissionService::class);
     }
 
     /**
@@ -45,6 +53,7 @@ class UserActionHandler
         if ($result === false) {
             return (new Response)->err('Der Benutzername und das Passwort stimmen nicht überein oder wurden nicht gefunden.');
         }
+        $this->permissionService->load($_SESSION['user_id']);
         return (new Response)->ok()->redirect('users');
     }
 

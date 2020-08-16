@@ -28,6 +28,13 @@ class UserController
     private $authService;
 
     /**
+     * Instance of the permission-service-object.
+     * 
+     * @var \Caravy\Permission\PermissionService
+     */
+    private $permissionService;
+
+    /**
      * Create a new user-controller instance.
      * 
      * @param \Caravy\Container\Container $container
@@ -38,6 +45,7 @@ class UserController
         $this->container = $container;
         $this->userMiddleware = $container->provide(\Caravy\User\Middleware\UserMiddleware::class);
         $this->authService = $container->provide(\Caravy\User\AuthService::class);
+        $this->permissionService = $container->provide(\Caravy\Permission\PermissionService::class);
     }
 
     /**
@@ -79,6 +87,10 @@ class UserController
             UrlHandler::redirect('login');
             return;
         }
+        if ($this->permissionService->isPermitted('user_create') === false) {
+            UrlHandler::redirect('users');
+            return;
+        }
         view('user/create', [
             'title' => 'Benutzer erstellen',
             'action' => UrlHandler::makeUrl('user/create'),
@@ -95,6 +107,10 @@ class UserController
     {
         if ($this->authService->isLoggedIn() === false) {
             UrlHandler::redirect('login');
+            return;
+        }
+        if ($this->permissionService->isPermitted('user_edit') === false) {
+            UrlHandler::redirect('users');
             return;
         }
         $user = $this->userMiddleware->findFirstModel('id', $id);
@@ -123,6 +139,10 @@ class UserController
     {
         if ($this->authService->isLoggedIn() === false) {
             UrlHandler::redirect('login');
+            return;
+        }
+        if ($this->permissionService->isPermitted('user_delete') === false) {
+            UrlHandler::redirect('users');
             return;
         }
         $user = $this->userMiddleware->findFirstModel('id', $id);
@@ -158,7 +178,7 @@ class UserController
             view('error', [
                 'title' => 'Error 400',
                 'code' => '400 Bad request',
-                'message' => 'Die angegebene Benutzername "' . $username . '" konnte nicht gefunden werden.',
+                'message' => 'Der angegebene Benutzername "' . $username . '" konnte nicht gefunden werden.',
             ], $this->container);
             return;
         }

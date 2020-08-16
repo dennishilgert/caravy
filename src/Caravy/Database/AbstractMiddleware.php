@@ -70,6 +70,17 @@ abstract class AbstractMiddleware
         return $result;
     }
 
+    function findModels(string $key, string $value)
+    {
+        $tableName = $this->getTableName();
+        $modelName = $this->getModelName();
+
+        $statement = $this->pdo->prepare("SELECT * FROM `$tableName` WHERE `$key` = :value");
+        $statement->execute(['value' => $value]);
+        $result = $statement->fetchAll(PDO::FETCH_CLASS, $modelName);
+        return $result;
+    }
+
     /**
      * Get first entry as model.
      * 

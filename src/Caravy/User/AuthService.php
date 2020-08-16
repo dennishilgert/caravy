@@ -18,7 +18,8 @@ class AuthService
             return false;
         }
         if (password_verify($password, $user->pass_hash)) {
-            $_SESSION['logged-in'] = $username;
+            $_SESSION['user_id'] = $user->id;
+            $_SESSION['user_username'] = $username;
             session_regenerate_id(true);
             return true;
         }
@@ -27,17 +28,18 @@ class AuthService
 
     public function logout()
     {
-        unset($_SESSION['logged-in']);
+        unset($_SESSION['user_id']);
+        unset($_SESSION['user_username']);
         session_regenerate_id(true);
     }
 
     public function isLoggedIn()
     {
-        return isset($_SESSION['logged-in']);
+        return isset($_SESSION['user_username']);
     }
 
     public function whoAmI()
     {
-        return $_SESSION['logged-in'];
+        return $_SESSION['user_username'];
     }
 }
