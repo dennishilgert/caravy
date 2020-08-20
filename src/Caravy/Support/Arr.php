@@ -199,4 +199,28 @@ class Arr
         }
         return null;
     }
+
+    /**
+     * Get the values that are not present in the second array.
+     * 
+     * @param array $array1
+     * @param array $array2
+     * @return array
+     */
+    public static function difference($array1, $array2)
+    {
+        return array_diff($array1, $array2);
+    }
+
+    /**
+     * Get the values that are present in both arrays.
+     * 
+     * @param array $array1
+     * @param array $array2
+     * @return array
+     */
+    public static function intersect($array1, $array2)
+    {
+        return array_intersect($array1, $array2);
+    }
 }

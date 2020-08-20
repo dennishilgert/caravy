@@ -98,19 +98,15 @@ class UserController
     }
 
     /**
-     * Send the user-edit view.
+     * Send the user-details-edit view.
      * 
      * @param string $id
      * @return void
      */
-    public function edit($id)
+    public function editDetails($id)
     {
         if ($this->authService->isLoggedIn() === false) {
             UrlHandler::redirect('login');
-            return;
-        }
-        if ($this->permissionService->isPermitted('user_edit') === false) {
-            UrlHandler::redirect('users');
             return;
         }
         $user = $this->userMiddleware->findFirstModel('id', $id);
@@ -122,10 +118,51 @@ class UserController
             ], $this->container);
             return;
         }
-        view('user/edit', [
-            'title' => 'Benutzer bearbeiten',
-            'action' => UrlHandler::makeUrl('user/edit'),
+        if ($this->authService->whoAmI() !== $user->username and $this->permissionService->isPermitted('user_edit_details') === false) {
+            UrlHandler::redirect('users');
+            return;
+        }
+        view('user/editDetails', [
+            'title' => 'Benutzerdaten bearbeiten',
+            'action' => UrlHandler::makeUrl('user/edit/details'),
             'user' => $user,
+        ], $this->container);
+    }
+
+    /**
+     * Send the user-permission-edit view.
+     * 
+     * @param string $id
+     * @return void
+     */
+    public function editPermissions($id)
+    {
+        if ($this->authService->isLoggedIn() === false) {
+            UrlHandler::redirect('login');
+            return;
+        }
+        $user = $this->userMiddleware->findFirstModel('id', $id);
+        if (empty($user)) {
+            view('error', [
+                'title' => 'Error 400',
+                'code' => '400 Bad request',
+                'message' => 'Die angegebene Benutzer-ID "' . $id . '" konnte nicht gefunden werden.',
+            ], $this->container);
+            return;
+        }
+        if ($this->permissionService->isPermitted('user_edit_permissions') === false) {
+            UrlHandler::redirect('users');
+            return;
+        }
+
+        view('user/editPermissions', [
+            'title' => 'Benutzerrechte bearbeiten',
+            'action' => UrlHandler::makeUrl('user/edit/permissions'),
+            'user' => $user,
+            'availablePermissions' => $this->permissionService->getAllPermissions(),
+            'availableRoles' => $this->permissionService->getAllRoles(),
+            'assignedPermissions' => $this->permissionService->getPermissionsasName($user->id),
+            'assignedRoles' => $this->permissionService->getRolesAsName($user->id)
         ], $this->container);
     }
 

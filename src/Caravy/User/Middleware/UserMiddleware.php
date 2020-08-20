@@ -17,10 +17,10 @@ class UserMiddleware extends AbstractMiddleware
     }
 
     /**
-     * Seek for the id of an user by username
+     * Seek for the id of an user by username.
      * 
      * @param string $username
-     * @return string
+     * @return int
      */
     public function seekId($username)
     {
@@ -64,20 +64,21 @@ class UserMiddleware extends AbstractMiddleware
         ]);
     }
 
+    /**
+     * Delete a user.
+     * 
+     * @param int $id
+     * @return bool
+     */
     public function delete($id)
     {
-        $tableName = $this->getTableName();
-
-        $statement = $this->pdo->prepare("DELETE FROM `$tableName` WHERE id = :id");
-        return $statement->execute([
-            'id' => $id,
-        ]);
+        return $this->remove('id', $id);
     }
 
     /**
      * Update the details of an user.
      * 
-     * @param string $id
+     * @param int $id
      * @param string $username
      * @param string $firstName
      * @param string $lastName
@@ -101,7 +102,7 @@ class UserMiddleware extends AbstractMiddleware
     /**
      * Update the password of an user.
      * 
-     * @param string $id
+     * @param int $id
      * @param string $password
      * @return bool
      */

@@ -81,6 +81,12 @@ class UserActionHandler
      */
     public function handleCreate($username, $firstName, $lastName, $email, $password, $passwordRepeat)
     {
+        if ($this->authService->isLoggedIn() === false) {
+            return (new Response)->err('Sie sind nicht angemeldet.');
+        }
+        if ($this->permissionService->isPermitted('user_create') === false) {
+            return (new Response)->err('Fehlende Berechtigung.');
+        }
         if ($password !== $passwordRepeat) {
             return (new Response)->err('Die Passwörter stimmen nicht überein.');
         }
@@ -95,7 +101,7 @@ class UserActionHandler
     }
 
     /**
-     * Handle the edit demand.
+     * Handle the edit details demand.
      * 
      * @param string $id
      * @param string $oldUsername
@@ -105,8 +111,14 @@ class UserActionHandler
      * @param string $email
      * @return \Caravy\Routing\Model\Response
      */
-    public function handleEdit($id, $oldUsername, $username, $firstName, $lastName, $email)
+    public function handleEditDetails($id, $oldUsername, $username, $firstName, $lastName, $email)
     {
+        if ($this->authService->isLoggedIn() === false) {
+            return (new Response)->err('Sie sind nicht angemeldet.');
+        }
+        if ($this->authService->whoAmI() !== $oldUsername and $this->permissionService->isPermitted('user_edit_details') === false) {
+            return (new Response)->err('Fehlende Berechtigung.');
+        }
         if ($oldUsername !== $username) {
             if ($this->userMiddleware->exists($username)) {
                 return (new Response)->err('Ein Benutzer mit diesem Benutzernamen ist bereits vorhanden.');
@@ -120,6 +132,22 @@ class UserActionHandler
     }
 
     /**
+     * Handle the edit permissions demand.
+     * 
+     * @param string $id
+     * @return \Caravy\Routing\Model\Response
+     */
+    public function handleEditPermissions($id)
+    {
+        if ($this->authService->isLoggedIn() === false) {
+            return (new Response)->err('Sie sind nicht angemeldet.');
+        }
+        if ($this->permissionService->isPermitted('user_edit_permissions') === false) {
+            return (new Response)->err('Fehlende Berechtigung.');
+        }
+    }
+
+    /**
      * Handle the delete demand.
      * 
      * @param string $id
@@ -127,6 +155,12 @@ class UserActionHandler
      */
     public function handleDelete($id)
     {
+        if ($this->authService->isLoggedIn() === false) {
+            return (new Response)->err('Sie sind nicht angemeldet.');
+        }
+        if ($this->permissionService->isPermitted('user_delete') === false) {
+            return (new Response)->err('Fehlende Berechtigung.');
+        }
         $result = $this->userMiddleware->delete($id);
         if ($result === false) {
             return (new Response)->err('Der Benutzer konnte nicht gelöscht werden.');

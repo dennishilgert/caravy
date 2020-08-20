@@ -16,17 +16,36 @@ class RoleMiddleware extends AbstractMiddleware
         return 'Caravy\\Permission\\Middleware\\Role';
     }
 
+    /**
+     * Seek for the id of a role by name.
+     * 
+     * @param string $name
+     * @return int
+     */
     public function seekId($name)
     {
         return $this->findFirst('id', 'name', $name);
     }
 
+    /**
+     * Check wether a role with this name already exists.
+     * 
+     * @param string $name
+     * @return bool
+     */
     public function exists($name)
     {
         $id = $this->findFirst('id', 'name', $name);
         return empty($id) === false;
     }
 
+    /**
+     * Create a new role.
+     * 
+     * @param string $name
+     * @param string $description
+     * @return bool
+     */
     public function create($name, $description)
     {
         $tableName = $this->getTableName();
@@ -38,6 +57,12 @@ class RoleMiddleware extends AbstractMiddleware
         ]);
     }
 
+    /**
+     * Delete a role.
+     * 
+     * @param int $id
+     * @return bool
+     */
     public function delete($id)
     {
         $tableName = $this->getTableName();
@@ -48,6 +73,14 @@ class RoleMiddleware extends AbstractMiddleware
         ]);
     }
 
+    /**
+     * Edit a role.
+     * 
+     * @param int $id
+     * @param string $name
+     * @param string $description
+     * @return bool
+     */
     public function edit($id, $name, $description)
     {
         $tableName = $this->getTableName();

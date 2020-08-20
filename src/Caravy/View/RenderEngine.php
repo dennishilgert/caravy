@@ -8,13 +8,6 @@ use Exception;
 class RenderEngine
 {
     /**
-     * Temporary stored blocks.
-     * 
-     * @var array
-     */
-    private $blocks;
-
-    /**
      * Content of the layout-file.
      * 
      * @var string
@@ -57,19 +50,14 @@ class RenderEngine
      */
     public function compile()
     {
-        $this->layout = $this->storeTags();
-        $this->layout = $this->storeStatements();
-
-        $restoredLayout = preg_replace_callback('/' . $this->getBlockPlaceholder('(\d+)') . '/', function ($matches) {
-            return $this->blocks[$matches[1]];
-        }, $this->layout);
-        $this->blocks = [];
+        $this->layout = $this->compileTags($this->layout);
+        $this->layout = $this->compileStatements($this->layout);
 
         extract($this->data, EXTR_SKIP);
         ob_start();
 
         try {
-            eval('?>' . $restoredLayout);
+            eval('?>' . $this->layout);
         } catch (Exception $e) {
             // Handle exception
             echo $e->getMessage();
@@ -79,12 +67,12 @@ class RenderEngine
     }
 
     /**
-     * Extract the yield-tags from the layout and replace
-     * them with a placeholder.
+     * Find and compile the tags.
      * 
+     * @param string $input
      * @return string|false
      */
-    private function storeTags()
+    private function compileTags($input)
     {
         $result = preg_replace_callback('/@(?<type>[\w]+)\s?\(\'(?<parameter>[\w\$\-\>\/\.]+)\'\)\;/', function ($match) {
             $type = $match['type'];
@@ -97,42 +85,46 @@ class RenderEngine
             $parameter = $match['parameter'];
             $compiled = $compiler->compile($parameter, $this->data);
 
-            return $this->storeBlock($compiled);
-        }, $this->layout);
+            return $compiled;
+        }, $input);
 
         return $result;
     }
 
     /**
-     * Extract the statement-blocks from the layout and replace
-     * them with a placeholder.
+     * Find and compile the statement-blocks.
      * 
+     * @param string $input
      * @return string
      */
-    private function storeStatements()
+    private function compileStatements($input)
     {
-        $result = preg_replace_callback('/@(?<statement>[a-z]{2,})\s?\((?<parameters>.+?)\)\s*(?<content>.+?)\s*@end\1/s', function ($match) {
+        $result = preg_replace_callback('/@(?<statement>[a-z]{2,})\s?\(\s{1}(?<parameters>.+?)\s{1}\)\s*(?<content>.+?)\s*@end\1/s', function ($match) {
             $statement = $match['statement'];
             $parameters = $match['parameters'];
             $content = $match['content'];
 
+            if ($this->containsStatements($content)) {
+                $content = $this->compileStatements($content);
+            }
             $block = $this->buildConditionBlock($statement, $parameters, $content);
 
-            return $this->storeBlock($block);
-        }, $this->layout);
+            return $block;
+        }, $input);
 
         return $result;
     }
 
     /**
-     * Save the uncompiled blocks temporary in an array.
+     * Check wether a block contains an embedded statement.
      * 
-     * @param string $block
-     * @return string
+     * @param string $input
+     * @return array|false
      */
-    private function storeBlock($block)
+    private function containsStatements($input)
     {
-        return $this->getBlockPlaceholder(array_push($this->blocks, $block) - 1);
+        preg_match_all('/@(?<statement>[a-z]{2,})\s?\(\s{1}(?<parameters>.+?)\s{1}\)\s*(?<content>.+?)\s*@end\1/s', $input, $matches, PREG_SET_ORDER, 1);
+        return empty($matches) === false;
     }
 
     /**
@@ -171,16 +163,5 @@ class RenderEngine
         }, $block);
 
         return $result;
-    }
-
-    /**
-     * Get a placeholder for a block.
-     * 
-     * @param int $index
-     * @return string
-     */
-    private function getBlockPlaceholder($index)
-    {
-        return str_replace('#', $index, '@__raw_block_#__@');
     }
 }

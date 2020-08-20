@@ -35,8 +35,10 @@ class Application
         $router->get('user/create', '\Caravy\User\UserController@create');
         $router->post('user/create', '\Caravy\User\UserActionHandler@handleCreate');
 
-        $router->get('user/edit/{id}', '\Caravy\User\UserController@edit');
-        $router->put('user/edit', '\Caravy\User\UserActionHandler@handleEdit');
+        $router->get('user/edit/details/{id}', '\Caravy\User\UserController@editDetails');
+        $router->put('user/edit/details', '\Caravy\User\UserActionHandler@handleEditDetails');
+        $router->get('user/edit/permissions/{id}', '\Caravy\User\UserController@editPermissions');
+        $router->put('user/edit/permissions', '\Caravy\User\UserActionHandler@handleEditPermissions');
 
         $router->get('user/delete/{id}', '\Caravy\User\UserController@delete');
         $router->delete('user/delete', '\Caravy\User\UserActionHandler@handleDelete');

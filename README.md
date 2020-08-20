@@ -44,7 +44,8 @@ Simple PHP framework, following the mvc-pattern
 
 -   user_create
 -   user_delete
--   user_edit
+-   user_edit_details
+-   user_edit_permissions
 
 ###### Post:
 

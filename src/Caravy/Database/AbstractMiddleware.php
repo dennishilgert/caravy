@@ -56,9 +56,11 @@ abstract class AbstractMiddleware
     /**
      * Get entry as model.
      * 
+     * @param string $key
+     * @param mixed $value
      * @return object
      */
-    function findModel(string $key, string $value)
+    function findModel(string $key, $value)
     {
         $tableName = $this->getTableName();
         $modelName = $this->getModelName();
@@ -70,7 +72,14 @@ abstract class AbstractMiddleware
         return $result;
     }
 
-    function findModels(string $key, string $value)
+    /**
+     * Get specific entries as models.
+     * 
+     * @param string $key
+     * @param mixed $value
+     * @return object[]
+     */
+    function findModels(string $key, $value)
     {
         $tableName = $this->getTableName();
         $modelName = $this->getModelName();
@@ -84,9 +93,11 @@ abstract class AbstractMiddleware
     /**
      * Get first entry as model.
      * 
+     * @param string $key
+     * @param mixed $value
      * @return object
      */
-    function findFirstModel(string $key, string $value)
+    function findFirstModel(string $key, $value)
     {
         $tableName = $this->getTableName();
         $modelName = $this->getModelName();
@@ -101,9 +112,12 @@ abstract class AbstractMiddleware
     /**
      * Get all entries as array.
      * 
+     * @param string $search
+     * @param string $key
+     * @param mixed $value
      * @return array
      */
-    function findAll(string $search, string $key, string $value)
+    function findAll(string $search, string $key, $value)
     {
         $tableName = $this->getTableName();
 
@@ -116,9 +130,12 @@ abstract class AbstractMiddleware
     /**
      * Get first entry.
      * 
+     * @param string $search
+     * @param string $key
+     * @param mixed $value
      * @return array
      */
-    function findFirst(string $search, string $key, string $value)
+    function findFirst(string $search, string $key, $value)
     {
         $tableName = $this->getTableName();
 
@@ -129,17 +146,39 @@ abstract class AbstractMiddleware
     }
 
     /**
-     * Remove entry.
+     * Remove an entry.
      * 
+     * @param string $key
+     * @param mixed $value
      * @return bool
      */
-    function remove(string $key, string $value)
+    function remove(string $key, $value)
     {
         $tableName = $this->getTableName();
 
         $statement = $this->pdo->prepare("DELETE FROM `$tableName` WHERE `$key` = :value");
         return $statement->execute([
             'value' => $value
+        ]);
+    }
+
+    /**
+     * Remove am entry with multiple conditions.
+     * 
+     * @param string $key
+     * @param mixed $value
+     * @param string $anotherKey
+     * @param mixed $anotherValue
+     * @return bool
+     */
+    public function removeSpecific(string $key, $value, string $anotherKey, $anotherValue)
+    {
+        $tableName = $this->getTableName();
+
+        $statement = $this->pdo->prepare("DELETE FROM `$tableName` WHERE `$key` = :value AND `$anotherKey` = :anotherValue");
+        return $statement->execute([
+            'value' => $value,
+            'anotherValue' => $anotherValue
         ]);
     }
 }
