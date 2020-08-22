@@ -18,7 +18,7 @@
 
         <br>
         <br>
-        <input type="submit" value="Änderungen speichern">
+        <input type="submit" value="Benutzerrechte aktualisieren">
         <br>
         <div id="response"></div>
     </form>

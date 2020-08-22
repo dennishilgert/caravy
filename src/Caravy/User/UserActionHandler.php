@@ -145,6 +145,7 @@ class UserActionHandler
         if ($this->permissionService->isPermitted('user_edit_permissions') === false) {
             return (new Response)->err('Fehlende Berechtigung.');
         }
+        
     }
 
     /**
